@@ -4,6 +4,7 @@ namespace MaterialQ.Controllers
 {
     public class MainController : Controller
     {
+
         public IActionResult Index()
         {
             return View();
