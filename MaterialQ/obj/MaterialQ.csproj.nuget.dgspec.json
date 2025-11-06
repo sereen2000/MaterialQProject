@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Sereen\\Source\\Repos\\MaterialQProjects\\MaterialQ\\MaterialQ.csproj": {}
+    "C:\\Users\\User\\Source\\Repos\\MaterialQProject\\MaterialQ\\MaterialQ.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Sereen\\Source\\Repos\\MaterialQProjects\\MaterialQ\\MaterialQ.csproj": {
+    "C:\\Users\\User\\Source\\Repos\\MaterialQProject\\MaterialQ\\MaterialQ.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Sereen\\Source\\Repos\\MaterialQProjects\\MaterialQ\\MaterialQ.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Source\\Repos\\MaterialQProject\\MaterialQ\\MaterialQ.csproj",
         "projectName": "MaterialQ",
-        "projectPath": "C:\\Users\\Sereen\\Source\\Repos\\MaterialQProjects\\MaterialQ\\MaterialQ.csproj",
-        "packagesPath": "C:\\Users\\Sereen\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Sereen\\Source\\Repos\\MaterialQProjects\\MaterialQ\\obj\\",
+        "projectPath": "C:\\Users\\User\\Source\\Repos\\MaterialQProject\\MaterialQ\\MaterialQ.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\User\\Source\\Repos\\MaterialQProject\\MaterialQ\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Sereen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -99,7 +98,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
