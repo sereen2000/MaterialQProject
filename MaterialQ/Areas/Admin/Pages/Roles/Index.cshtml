@@ -1,0 +1,67 @@
+﻿@page
+@model MaterialQ.Areas.Admin.Pages.Roles.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Role Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="section dashboard">
+    <div class="container mt-5">
+        <div class="card shadow-sm p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Manage Roles</h5>
+            </div>
+
+            <!-- ✅ Add Role Form -->
+            <form method="post" asp-page-handler="Create" class="row g-2 mb-3">
+                @Html.AntiForgeryToken()
+                <div class="col-md-8">
+                    <input asp-for="RoleName" class="form-control" placeholder="Enter new role name..." required />
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-primary w-100" type="submit">
+                        <i class="bi bi-plus-circle me-1"></i> Add Role
+                    </button>
+                </div>
+            </form>
+
+            <!-- ✅ Success/Error Messages -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success text-center">@TempData["Success"]</div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger text-center">@TempData["Error"]</div>
+            }
+
+            <!-- ✅ Roles Table -->
+            <table class="table table-striped align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Role Name</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var role in Model.Roles)
+                    {
+                        <tr>
+                            <td>@role.Name</td>
+                            <td class="text-end">
+                                <form method="post" asp-page-handler="Delete" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@role.Id" />
+                                    <button class="btn btn-outline-danger btn-sm" type="submit">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

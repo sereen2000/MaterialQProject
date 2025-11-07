@@ -1,0 +1,90 @@
+﻿@page
+@model MaterialQ.Areas.Admin.Pages.Users.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Identity
+@inject RoleManager<IdentityRole> RoleManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var allRoles = RoleManager.Roles.ToList();
+}
+
+<section class="section dashboard">
+    <div class="container mt-5">
+        <div class="card shadow-sm p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Manage Users</h5>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success text-center">@TempData["Success"]</div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger text-center">@TempData["Error"]</div>
+            }
+
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Email</th>
+                        <th class="text-center">Current Roles</th>
+                        <th class="text-center" style="width: 45%;">Add / Remove Roles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.UsersList)
+                    {
+                        var userRoles = await UserManager.GetRolesAsync(user);
+                        <tr>
+                            <td>@user.Email</td>
+                            <td class="text-center">
+                                @if (userRoles.Any())
+                                {
+                                    @foreach (var role in userRoles)
+                                    {
+                                        <form method="post" asp-page-handler="RemoveRole" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="userId" value="@user.Id" />
+                                            <input type="hidden" name="roleName" value="@role" />
+                                            <span class="badge bg-primary">
+                                                @role
+                                                <button type="submit" class="btn btn-sm btn-link text-white p-0 ms-1">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </span>
+                                        </form>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No roles assigned</span>
+                                }
+                            </td>
+
+                            <td>
+                                <form method="post" asp-page-handler="AddRole" class="d-flex gap-2 justify-content-center">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" asp-for="SelectedUserId" value="@user.Id" />
+                                    <select asp-for="SelectedRole" class="form-select w-50" required>
+                                        <option value="">Select Role...</option>
+                                        @foreach (var role in allRoles)
+                                        {
+                                            <option value="@role.Name">@role.Name</option>
+                                        }
+                                    </select>
+                                    <button class="btn btn-primary btn-sm w-25" type="submit">
+                                        <i class="bi bi-person-plus"></i> Add
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
