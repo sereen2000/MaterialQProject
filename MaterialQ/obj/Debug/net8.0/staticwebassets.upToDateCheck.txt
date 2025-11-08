@@ -4,7 +4,9 @@ wwwroot\favicon.ico
 wwwroot\img\apple-touch-icon.png
 wwwroot\img\card.jpg
 wwwroot\img\favicon.png
+wwwroot\img\Image.png
 wwwroot\img\logo.png
+wwwroot\img\LOGO_page.png
 wwwroot\img\messages-1.jpg
 wwwroot\img\messages-2.jpg
 wwwroot\img\messages-3.jpg

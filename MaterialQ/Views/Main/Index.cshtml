@@ -190,22 +190,22 @@
         </li><!-- End Icons Nav -->
 
         <li class="nav-heading">Pages</li>
+        <li class="nav-item">
+            <a class="nav-link collapsed" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">
+                <i class="bi bi-question-circle"></i>
+                <span>Profile</span>
+            </a>
+        </li><!-- End F.A.Q Page Nav -->
         @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
         {
-        <li class="nav-item">
+   @*      <li class="nav-item">
             <a class="nav-link collapsed" asp-controller="Main" asp-action="Profile">
                 <i class="bi bi-person"></i>
                 <span>Profile</span>
             </a>
         </li><!-- End Profile Page Nav -->
-
-        <li class="nav-item">
-            <a class="nav-link collapsed" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">
-                <i class="bi bi-question-circle"></i>
-                <span>Change Password</span>
-            </a>
-        </li><!-- End F.A.Q Page Nav -->
-
+ *@
+      
         <li class="nav-item">
             <a class="nav-link collapsed" href="pages-contact.html">
                 <i class="bi bi-envelope"></i>
@@ -436,7 +436,7 @@
                                         markers: {
                                           size: 4
                                         },
-                                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                                        colors: ['#b89c6b', '#2eca6a', '#ff771d'],
                                         fill: {
                                           type: "gradient",
                                           gradient: {
