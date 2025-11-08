@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\User\\source\\repos\\MaterialQProject\\MaterialQ\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\user\\source\\repos\\materialqproject\\materialq\\views\\main\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\main\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\user\\source\\repos\\materialqproject\\materialq\\views\\main\\profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\main\\profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\user\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\login.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\login.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\user\\source\\repos\\materialqproject\\materialq\\views\\main\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\main\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\user\\source\\repos\\materialqproject\\materialq\\controllers\\maincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -114,7 +114,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 22,
+          "SelectedChildIndex": 21,
           "Children": [
             {
               "$type": "Bookmark",
@@ -181,6 +181,10 @@
               "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 6,
               "Title": "_ViewImports.cshtml",
@@ -234,20 +238,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Index.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Main\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Main\\Index.cshtml",
               "ToolTip": "C:\\Users\\User\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Main\\Index.cshtml",
               "RelativeToolTip": "Views\\Main\\Index.cshtml",
-              "ViewState": "AgIAALkAAAAAAAAAAAAAAMQAAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAO0AAAAAAAAAAAAAAPIAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-11-07T14:31:44.108Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Login.cshtml.cs",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Login.cshtml.cs",
               "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Login.cshtml.cs",
@@ -260,7 +264,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Profile.cshtml",
               "DocumentMoniker": "C:\\Users\\User\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Main\\Profile.cshtml",
               "RelativeDocumentMoniker": "Views\\Main\\Profile.cshtml",
@@ -283,10 +287,6 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-07T22:53:35.498Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
             },
             {
               "$type": "Document",
