@@ -1,0 +1,535 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\main\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\main\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\main\\profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\main\\profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\login.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\login.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\controllers\\maincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:controllers\\maincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\manage\\managenavpages.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\manage\\managenavpages.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\manage\\changepassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\manage\\changepassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\manage\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\manage\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\manage\\_managenav.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\manage\\_managenav.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\resetpassword.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\resetpassword.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\shared\\layoutmain.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\shared\\layoutmain.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\_validationscriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\_validationscriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\identity\\pages\\account\\forgotpassword.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\identity\\pages\\account\\forgotpassword.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\admin\\pages\\roles\\index.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\admin\\pages\\roles\\index.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\admin\\pages\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\admin\\pages\\users\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\admin\\pages\\roles\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\admin\\pages\\roles\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\shared\\_loginpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\shared\\_loginpartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\areas\\admin\\pages\\users\\index.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:areas\\admin\\pages\\users\\index.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAgwAgAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-08T01:27:13.187Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:12:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:13:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:20:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:21:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:23:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:24:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:25:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:26:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:15:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:16:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:17:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:18:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:19:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:22:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ManageNavPages.cs",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Manage\\ManageNavPages.cs",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Manage\\ManageNavPages.cs",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Manage\\ManageNavPages.cs",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Manage\\ManageNavPages.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T00:41:14.775Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ChangePassword.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Manage\\ChangePassword.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Manage\\ChangePassword.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Manage\\ChangePassword.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Manage\\ChangePassword.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.777Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ForgotPassword.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\ForgotPassword.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\ForgotPassword.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\ForgotPassword.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\ForgotPassword.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.78Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Main\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Main\\Index.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Main\\Index.cshtml",
+              "RelativeToolTip": "Views\\Main\\Index.cshtml",
+              "ViewState": "AgIAAOQAAAAAAAAAAAAAAAIBAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.782Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T00:41:14.826Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Manage\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Manage\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Manage\\_ViewImports.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Manage\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.547Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Login.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Login.cshtml.cs",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Login.cshtml.cs",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Login.cshtml.cs",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Login.cshtml.cs",
+              "ViewState": "AgIAAEMAAAAAAAAAAAAswE4AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T00:41:14.784Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Profile.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Main\\Profile.cshtml",
+              "RelativeDocumentMoniker": "Views\\Main\\Profile.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Main\\Profile.cshtml",
+              "RelativeToolTip": "Views\\Main\\Profile.cshtml",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAAAAwAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.786Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MainController.cs",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Controllers\\MainController.cs",
+              "RelativeDocumentMoniker": "Controllers\\MainController.cs",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Controllers\\MainController.cs",
+              "RelativeToolTip": "Controllers\\MainController.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAAABEAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T00:41:14.788Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "LayoutMain.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Shared\\LayoutMain.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\LayoutMain.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Shared\\LayoutMain.cshtml",
+              "RelativeToolTip": "Views\\Shared\\LayoutMain.cshtml",
+              "ViewState": "AgIAAB4BAAAAAAAAAAAAACYBAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.791Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ResetPassword.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\ResetPassword.cshtml.cs",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\ResetPassword.cshtml.cs",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\ResetPassword.cshtml.cs",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\ResetPassword.cshtml.cs",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAwwFkAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T00:41:14.793Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "_ManageNav.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Manage\\_ManageNav.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Manage\\_ManageNav.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Manage\\_ManageNav.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Manage\\_ManageNav.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.795Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ResetPassword.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\ResetPassword.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\ResetPassword.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\ResetPassword.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\ResetPassword.cshtml",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAqwEsAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.797Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Login.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Login.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Login.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Login.cshtml",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAAAFIAAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.799Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Register.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Register.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\Register.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\Register.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\Register.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.801Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\_ViewImports.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.804Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\_ViewStart.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\_ViewStart.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.807Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "_ValidationScriptsPartial.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\_ValidationScriptsPartial.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\_ValidationScriptsPartial.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\_ValidationScriptsPartial.cshtml",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\_ValidationScriptsPartial.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.809Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "ForgotPassword.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\ForgotPassword.cshtml.cs",
+              "RelativeDocumentMoniker": "Areas\\Identity\\Pages\\Account\\ForgotPassword.cshtml.cs",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Identity\\Pages\\Account\\ForgotPassword.cshtml.cs",
+              "RelativeToolTip": "Areas\\Identity\\Pages\\Account\\ForgotPassword.cshtml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T00:41:14.811Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAAAA4AAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.814Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "Index.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Admin\\Pages\\Users\\Index.cshtml.cs",
+              "RelativeDocumentMoniker": "Areas\\Admin\\Pages\\Users\\Index.cshtml.cs",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Admin\\Pages\\Users\\Index.cshtml.cs",
+              "RelativeToolTip": "Areas\\Admin\\Pages\\Users\\Index.cshtml.cs",
+              "ViewState": "AgIAADUAAAAAAAAAAAAIwE8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T00:41:14.816Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Admin\\Pages\\Users\\Index.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Admin\\Pages\\Users\\Index.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Admin\\Pages\\Users\\Index.cshtml",
+              "RelativeToolTip": "Areas\\Admin\\Pages\\Users\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.819Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Index.cshtml.cs",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Admin\\Pages\\Roles\\Index.cshtml.cs",
+              "RelativeDocumentMoniker": "Areas\\Admin\\Pages\\Roles\\Index.cshtml.cs",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Admin\\Pages\\Roles\\Index.cshtml.cs",
+              "RelativeToolTip": "Areas\\Admin\\Pages\\Roles\\Index.cshtml.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAUwAkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T00:41:14.821Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Admin\\Pages\\Roles\\Index.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Admin\\Pages\\Roles\\Index.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Areas\\Admin\\Pages\\Roles\\Index.cshtml",
+              "RelativeToolTip": "Areas\\Admin\\Pages\\Roles\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.823Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "_LoginPartial.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Shared\\_LoginPartial.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_LoginPartial.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Shared\\_LoginPartial.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_LoginPartial.cshtml",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAAAA4AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.828Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-11-08T00:41:14.831Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
