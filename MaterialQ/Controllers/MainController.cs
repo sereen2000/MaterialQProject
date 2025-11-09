@@ -19,5 +19,22 @@ namespace MaterialQ.Controllers
         {
             return View();
         }
+
+        public IActionResult Quotations()
+        {
+           
+            return View();
+        }
+
+        public IActionResult AddQuotation()
+        {
+           
+            return View();
+        }
+
+        public IActionResult Products()
+        {
+            return View();
+        }
     }
 }
