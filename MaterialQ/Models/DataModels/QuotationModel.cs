@@ -34,23 +34,24 @@ namespace MaterialQ.Models.DataModels
             [StringLength(50)]
             public string Status { get; set; }            
 
-            public List<QuotationItemModel> Items { get; set; } = new(); 
+            public List<QuotationItemsModel> Items { get; set; } = new(); 
         }
 
-        public class QuotationItemModel
+        public class QuotationItemsModel
         {
             [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
             [Required]
-            public int ProductId { get; set; }           
+        public int ItemId { get; set; } 
+        [Required]
+           
+       
+        public string ItemDescription { get; set; }
 
-            [Required]
-            [StringLength(200)]
-            public string ProductName { get; set; }
 
-            [Required]
+        [Required]
             public int Quantity { get; set; }
 
             [Required]

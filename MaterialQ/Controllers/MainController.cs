@@ -33,7 +33,7 @@ public class MainController : Controller
             return View();
         }
 
-        public IActionResult Products()
+        public IActionResult Dashboard()
         {
             return View();
         }

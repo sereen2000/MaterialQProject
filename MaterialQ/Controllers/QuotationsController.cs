@@ -1,22 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using MaterialQ.Data;
+using MaterialQ.Models.DataModels;
+using MaterialQ.Models.ViewModels;
+using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MaterialQ.Data;
-using MaterialQ.Models.DataModels;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MaterialQ.Controllers
 {
     public class QuotationsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-        public QuotationsController(ApplicationDbContext context)
+        private readonly IItemService _itemService;
+        public QuotationsController(ApplicationDbContext context, IItemService itemService)
         {
             _context = context;
+            _itemService = itemService;
         }
 
         // GET: Quotations
@@ -44,11 +47,39 @@ namespace MaterialQ.Controllers
         }
 
         // GET: Quotations/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
+        {
+            var items = await _itemService.GetAllAsync();
+            var viewModel = new AddQuotationViewModel
+            {
+                Items = items.ToList()
+            };
+
+            return View(viewModel);
+        }
+        [HttpGet]
+        public IActionResult ReviewQuotation()
         {
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SaveQuotation([FromBody] QuotationModel quotation)
+        {
+            if (quotation == null || quotation.Items == null || !quotation.Items.Any())
+                return BadRequest(new { success = false, message = "Quotation is empty." });
+
+            // توليد رقم عرض سعر (بسيط مبدئياً)
+            quotation.QuotationNumber = $"Q-{DateTime.Now:yyyyMMddHHmmss}";
+            quotation.Status = "Draft";
+            quotation.TotalAmount = quotation.Items.Sum(i => i.Total);
+            quotation.NetAmount = quotation.TotalAmount - quotation.Discount;
+
+            _context.Quotations.Add(quotation);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { success = true, message = "Quotation saved successfully." });
+        }
         // POST: Quotations/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.

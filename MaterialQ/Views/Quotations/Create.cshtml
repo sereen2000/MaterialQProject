@@ -1,66 +1,130 @@
-﻿@model MaterialQ.Models.DataModels.QuotationModel
+﻿@model MaterialQ.Models.ViewModels.AddQuotationViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add Quotation";
     Layout = "~/Views/Shared/LayoutMain.cshtml";
 }
 
-<h1>Create</h1>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-plus-circle me-2"></i> Select Items</h2>
 
-<h4>QuotationModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="QuotationNumber" class="control-label"></label>
-                <input asp-for="QuotationNumber" class="form-control" />
-                <span asp-validation-for="QuotationNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CustomerName" class="control-label"></label>
-                <input asp-for="CustomerName" class="form-control" />
-                <span asp-validation-for="CustomerName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" />
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Discount" class="control-label"></label>
-                <input asp-for="Discount" class="form-control" />
-                <span asp-validation-for="Discount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NetAmount" class="control-label"></label>
-                <input asp-for="NetAmount" class="form-control" />
-                <span asp-validation-for="NetAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        <a asp-controller="Quotations" asp-action="ReviewQuotation" class="btn btn-outline-secondary position-relative">
+            <i class="bi bi-cart3"></i> Cart
+            <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                0
+            </span>
+        </a>
+    </div>
+
+    <!-- فلاتر -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="search" placeholder="Search items..." />
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="category">
+                <option value="">All Categories</option>
+                <option>Electronics</option>
+                <option>Furniture</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="brand">
+                <option value="">All Brands</option>
+                <option>Brand A</option>
+                <option>Brand B</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="bi bi-search"></i> Filter
+            </button>
+        </div>
+    </form>
+
+    <!-- جدول العناصر -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Unit</th>
+                        <th style="width: 60px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>@item.Code</td>
+                                <td>@item.Description</td>
+                                <td>@item.Price.ToString("F2")</td>
+                                <td>@item.Unit?.Name</td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-success" onclick="addToCart('@item.Id')">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No items found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        function addToCart(id) {
+            // نجيب السلة الحالية من localStorage أو نعمل واحدة جديدة
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+            // نجيب بيانات الصف من الجدول
+            const row = event.target.closest("tr");
+            const code = row.children[0].innerText.trim();
+            const description = row.children[1].innerText.trim();
+            const price = parseFloat(row.children[2].innerText);
+
+            // نشيك إذا المنتج موجود مسبقاً
+            const existing = cart.find(i => i.id === id);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    code: code,
+                    description: description,
+                    price: price,
+                    qty: 1
+                });
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            document.getElementById("cartCount").innerText = cart.length;
+
+            console.log("🛒 Cart Updated:", cart);
+            alert("✅ Added to cart successfully!");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            document.getElementById("cartCount").innerText = cart.length;
+        });
+    </script>
+}
 
