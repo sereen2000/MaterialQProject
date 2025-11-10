@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\services\\implementations\\itemservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:services\\implementations\\itemservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\item\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\item\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\controllers\\itemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:controllers\\itemcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\item\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:views\\item\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\services\\implementations\\itemservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|solutionrelative:services\\implementations\\itemservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E50B0CB5-75A5-44B1-9F08-C81F9207EEDB}|MaterialQ.csproj|c:\\users\\rahaf\\source\\repos\\materialqproject\\materialq\\views\\item\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
@@ -118,92 +118,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 30,
+          "SelectedChildIndex": 2,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:12:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:13:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:20:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:21:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:23:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:24:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:25:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:26:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:15:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:16:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:17:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:18:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:19:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:22:0:{2456bd12-ecf7-4988-a4a6-67d49173f565}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c64b9c2-e352-428e-a56d-0ace190b99a6}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 10,
@@ -234,13 +150,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "Create.cshtml",
               "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Item\\Create.cshtml",
               "RelativeDocumentMoniker": "Views\\Item\\Create.cshtml",
               "ToolTip": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Views\\Item\\Create.cshtml",
               "RelativeToolTip": "Views\\Item\\Create.cshtml",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAswBoAAABiAAAAAAAAAA==",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAswGUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
               "WhenOpened": "2025-11-09T02:13:41.326Z",
               "EditorCaption": ""
@@ -325,7 +241,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "ItemService.cs",
               "DocumentMoniker": "C:\\Users\\rahaf\\source\\repos\\MaterialQProject\\MaterialQ\\Services\\Implementations\\ItemService.cs",
               "RelativeDocumentMoniker": "Services\\Implementations\\ItemService.cs",

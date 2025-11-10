@@ -114,12 +114,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/rahaf/source/repos/MaterialQProject/MaterialQ/Views/Main/AddQuotation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFpblxBZGRRdW90YXRpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/rahaf/source/repos/MaterialQProject/MaterialQ/Views/Main/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFpblxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/rahaf/source/repos/MaterialQProject/MaterialQ/Views/Main/Products.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFpblxQcm9kdWN0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/rahaf/source/repos/MaterialQProject/MaterialQ/Views/Main/Profile.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFpblxQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/rahaf/source/repos/MaterialQProject/MaterialQ/Views/Main/Quotations.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFpblxRdW90YXRpb25zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/rahaf/source/repos/MaterialQProject/MaterialQ/Views/Shared/Error.cshtml]

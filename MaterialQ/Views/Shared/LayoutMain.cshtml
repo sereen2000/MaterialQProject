@@ -32,6 +32,26 @@
 
     <!-- Template Main CSS File -->
     <link href="~/css/style.css" rel="stylesheet">
+    <style>
+        /* إزالة أي تباعد من المحتوى الرئيسي */
+        .main {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+
+        /* في حال الهيدر ثابت (fixed) */
+        header.navbar, header.header, nav.navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+        }
+
+        body {
+            margin: 100px;
+            padding: 0;
+        }
+    </style>
 
 </head>
 
@@ -41,7 +61,7 @@
     <header id="header" class="header fixed-top d-flex align-items-center">
 
         <div class="d-flex align-items-center justify-content-between">
-            <a href="index.html" class="logo d-flex align-items-center">
+            <a asp-controller="Main" asp-action="index" class="logo d-flex align-items-center">
                 <img src="~/img/LOGO_page.png" alt="">
                 <span class="d-none d-lg-block">Art Of Quote</span>
             </a>
@@ -90,14 +110,7 @@
                                 </a>
                             </li>
 
-                         @*    <li><hr class="dropdown-divider"></li>
-
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" asp-area="Identity" asp-page="/Account/Manage/Index">
-                                    <i class="bi bi-gear"></i>
-                                    <span>Account Settings</span>
-                                </a>
-                            </li> *@
+                        
 
                             <li><hr class="dropdown-divider"></li>
 
