@@ -1,6 +1,21 @@
 wwwroot\css\site.css
 wwwroot\css\style.css
 wwwroot\favicon.ico
+wwwroot\images\items\Brainstorming Customizable Cartoon Illustrations _ Bro Style_0e3c5074-9368-4656-9137-4db3be4b2ab8.jpeg
+wwwroot\images\items\Brainstorming Customizable Cartoon Illustrations _ Bro Style_74804927-7e94-4d79-8bee-2c935d3b50c6.jpeg
+wwwroot\images\items\ChatGPT Image Nov 4, 2025, 11_14_53 AM_714f2813-fa4a-4ffe-9dd0-9b822115863e.png
+wwwroot\images\items\ChatGPT Image Nov 4, 2025, 11_14_53 AM_bd4db9d9-f821-4605-97b1-948b26164398.png
+wwwroot\images\items\Completed steps concept illustration _ Premium Vector_19e4d8b0-aab1-4b3c-9e05-d086a7565da1.jpeg
+wwwroot\images\items\Completed steps concept illustration _ Premium Vector_b4380e4e-0f9a-430e-bcc8-b574d2e2b6f1.jpeg
+wwwroot\images\items\download_1c50d942-8a85-456a-887e-eb4e3b7c3af6.jpeg
+wwwroot\images\items\download_40b777ff-9aaa-46ba-926a-6924171ed6e2.jpeg
+wwwroot\images\items\download_59b812cf-4f5d-4137-9643-41cee8326ee2.jpeg
+wwwroot\images\items\download_677cddd4-fef1-41dd-814f-3b622d9f2b35.jpeg
+wwwroot\images\items\download_eb8424d9-03ea-4215-a884-9827bbc0c7ce.jpeg
+wwwroot\images\items\file (7)_a5c52130-72af-4116-b965-1b4b67ce1e8f.pdf
+wwwroot\images\items\file (7)_d3cd066a-87d2-4f42-8dae-97dd128c6c87.pdf
+wwwroot\images\items\Screenshot (2)_36555405-8f1f-403c-866b-c7ecac2bf3f5.png
+wwwroot\images\items\Screenshot (2)_ffcc9a42-b2ef-4e9d-98f4-6c5bfb7ab693.png
 wwwroot\img\apple-touch-icon.png
 wwwroot\img\card.jpg
 wwwroot\img\favicon.png
@@ -575,3 +590,5 @@ wwwroot\vendor\tinymce\themes\silver\theme.min.js
 wwwroot\vendor\tinymce\tinymce.d.ts
 wwwroot\vendor\tinymce\tinymce.js
 wwwroot\vendor\tinymce\tinymce.min.js
+wwwroot\images\items\Screenshot (10)_295ca29d-b178-4dd2-b5aa-e4244dbde33d.png
+wwwroot\images\items\Screenshot (10)_dc1d93aa-3f75-4063-b2d2-b2f0aa1aae9d.png

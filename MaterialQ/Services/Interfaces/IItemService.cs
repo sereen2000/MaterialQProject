@@ -6,6 +6,7 @@ public interface IItemService
 {
     Task<IEnumerable<ItemsModel>> GetAllAsync();
     Task<ItemsModel?> GetByIdAsync(int id);
+    Task AddItemWithColorsAsync(IFormCollection form);
     Task AddAsync(ItemsModel item);
     Task AddItemsAsync(List<ItemsModel> items);
     Task UpdateAsync(ItemsModel item);
