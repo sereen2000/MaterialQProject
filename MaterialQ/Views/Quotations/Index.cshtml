@@ -1,0 +1,42 @@
+﻿@model IEnumerable<MaterialQ.Models.DataModels.QuotationModel>
+
+@{
+    ViewData["Title"] = "Quotations";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Quotations</h2>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Quotation
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var q in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow h-100 border-0">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-receipt"></i> Quotation #@q.QuotationNumber
+                        </h5>
+
+                        <ul class="list-unstyled small text-muted">
+                            <li><strong>Customer:</strong> @q.CustomerName</li>
+                            <li><strong>Date:</strong> @q.DateCreated.ToShortDateString()</li>
+                            <li><strong>Total:</strong> @q.TotalAmount.ToString("C")</li>
+                            <li><strong>Status:</strong> <span class="badge bg-info text-dark">@q.Status</span></li>
+                        </ul>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <a asp-action="Edit" asp-route-id="@q.Id" class="btn btn-outline-warning btn-sm">Edit</a>
+                            <a asp-action="Details" asp-route-id="@q.Id" class="btn btn-outline-info btn-sm">Details</a>
+                            <a asp-action="Delete" asp-route-id="@q.Id" class="btn btn-outline-danger btn-sm">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
