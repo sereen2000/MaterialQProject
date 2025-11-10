@@ -4,7 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>aspnet-MaterialQ-7f42a3eb-32ec-43b2-bff0-20407f43b0d8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

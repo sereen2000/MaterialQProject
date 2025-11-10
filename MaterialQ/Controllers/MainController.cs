@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MaterialQ.Controllers
-{
-    [Authorize]
-    public class MainController : Controller
-    {
+namespace MaterialQ.Controllers;
 
+[Authorize]
+public class MainController : Controller
+{
+
+  
         public IActionResult Index()
         {
             return View();
@@ -19,5 +20,22 @@ namespace MaterialQ.Controllers
         {
             return View();
         }
+
+        public IActionResult Quotations()
+        {
+           
+            return View();
+        }
+
+        public IActionResult AddQuotation()
+        {
+           
+            return View();
+        }
+
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
     }
-}
+

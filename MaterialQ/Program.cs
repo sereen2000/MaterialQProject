@@ -1,4 +1,8 @@
 using MaterialQ.Data;
+using MaterialQ.Data.Repositories.Implementations;
+using MaterialQ.Data.Repositories.Interfaces;
+using MaterialQ.Services.Implementations;
+using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +20,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IColorService, ColorService>();
+builder.Services.AddScoped<IUnitService, UnitService>();
 
 
 var app = builder.Build();
@@ -44,6 +52,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Main}/{action=Index}/{id?}");
+    pattern: "{controller=Main}/{action=dashboard}/{id?}");
 app.MapRazorPages();
 app.Run();

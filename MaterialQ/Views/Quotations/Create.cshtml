@@ -1,0 +1,130 @@
+﻿@model MaterialQ.Models.ViewModels.AddQuotationViewModel
+
+@{
+    ViewData["Title"] = "Add Quotation";
+    Layout = "~/Views/Shared/LayoutMain.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-plus-circle me-2"></i> Select Items</h2>
+
+        <a asp-controller="Quotations" asp-action="ReviewQuotation" class="btn btn-outline-secondary position-relative">
+            <i class="bi bi-cart3"></i> Cart
+            <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                0
+            </span>
+        </a>
+    </div>
+
+    <!-- فلاتر -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="search" placeholder="Search items..." />
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="category">
+                <option value="">All Categories</option>
+                <option>Electronics</option>
+                <option>Furniture</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="brand">
+                <option value="">All Brands</option>
+                <option>Brand A</option>
+                <option>Brand B</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="bi bi-search"></i> Filter
+            </button>
+        </div>
+    </form>
+
+    <!-- جدول العناصر -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Unit</th>
+                        <th style="width: 60px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>@item.Code</td>
+                                <td>@item.Description</td>
+                                <td>@item.Price.ToString("F2")</td>
+                                <td>@item.Unit?.Name</td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-success" onclick="addToCart('@item.Id')">
+                                        <i class="bi bi-plus-circle"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No items found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function addToCart(id) {
+            // نجيب السلة الحالية من localStorage أو نعمل واحدة جديدة
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            // نجيب بيانات الصف من الجدول
+            const row = event.target.closest("tr");
+            const code = row.children[0].innerText.trim();
+            const description = row.children[1].innerText.trim();
+            const price = parseFloat(row.children[2].innerText);
+
+            // نشيك إذا المنتج موجود مسبقاً
+            const existing = cart.find(i => i.id === id);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({
+                    id: id,
+                    code: code,
+                    description: description,
+                    price: price,
+                    qty: 1
+                });
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            document.getElementById("cartCount").innerText = cart.length;
+
+            console.log("🛒 Cart Updated:", cart);
+            alert("✅ Added to cart successfully!");
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            document.getElementById("cartCount").innerText = cart.length;
+        });
+    </script>
+}
+

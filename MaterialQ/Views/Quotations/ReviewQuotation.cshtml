@@ -1,0 +1,140 @@
+﻿@{
+    ViewData["Title"] = "Review Quotation";
+    Layout = "~/Views/Shared/LayoutMain.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-cart3 me-2"></i> Review Quotation</h2>
+
+        <a asp-controller="Quotations" asp-action="Create" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i> Add More Items
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table id="cartTable" class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th style="width: 60px;"></th>
+                    </tr>
+                </thead>
+                <tbody id="cartBody">
+                
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-end mt-4">
+                <h5 class="me-4">
+                    Subtotal:
+                    <span id="subtotal" class="text-primary fw-bold">0.00</span> JOD
+                </h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a asp-controller="Quotations" asp-action="Create" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+
+        <button type="button" class="btn btn-success" onclick="saveQuotation()">
+            <i class="bi bi-check-circle"></i> Confirm & Save Quotation
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const cartBody = document.getElementById("cartBody");
+            const subtotalEl = document.getElementById("subtotal");
+            let subtotal = 0;
+
+            if (cart.length === 0) {
+                cartBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No items added yet.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            cart.forEach(item => {
+                const total = (item.price * item.qty).toFixed(2);
+                subtotal += parseFloat(total);
+
+                const row = `
+                    <tr>
+                        <td>${item.code}</td>
+                        <td>${item.description}</td>
+                        <td>${item.price.toFixed(2)}</td>
+                        <td>
+                            <input type="number" min="1" value="${item.qty}"
+                                class="form-control form-control-sm text-center qty-input"
+                                data-id="${item.id}">
+                        </td>
+                        <td>${total}</td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                cartBody.insertAdjacentHTML("beforeend", row);
+            });
+
+            subtotalEl.textContent = subtotal.toFixed(2);
+        });
+
+        // حذف عنصر من السلة
+        function removeFromCart(id) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart = cart.filter(i => i.id !== id);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            location.reload();
+        }
+
+        // حفظ الكوتيشن فعليًا في قاعدة البيانات
+        async function saveQuotation() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            if (cart.length === 0) return alert("Cart is empty!");
+
+            const quotation = {
+                customerName: "Walk-in Customer",
+                discount: 0,
+                totalAmount: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
+                netAmount: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
+                items: cart.map(i => ({
+                    productId: i.id,             // متطابق مع الموديل الحالي عندك
+                    productName: i.description,  // Description من الصفحة السابقة
+                    quantity: i.qty,
+                    unitPrice: i.price
+                }))
+            };
+
+            const res = await fetch('/Quotations/SaveQuotation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(quotation)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert("Quotation saved successfully!");
+                localStorage.removeItem("cart");
+                window.location.href = '/Quotations/Index';
+            } else {
+                alert(data.message || "Failed to save quotation");
+            }
+        }
+    </script>
+}
