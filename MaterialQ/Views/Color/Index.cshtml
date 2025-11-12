@@ -48,8 +48,15 @@
                                     <td>@color.Id</td>
                                     <td>@color.Name</td>
                                     <td>
-                                        <a href="@Url.Action("Edit", "Color", new { id = color.Id })" class="btn btn-sm btn-primary">Edit</a>
-                                        <a href="@Url.Action("Delete", "Color", new { id = color.Id })" class="btn btn-sm btn-danger">Delete</a>
+                                            <a href="@Url.Action("Edit", "Color", new { id = color.Id })"
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </a>
+
+                                            <a href="@Url.Action("Delete", "Color", new { id = color.Id })"
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </a>
                                     </td>
                                 </tr>
                             }

@@ -1,6 +1,7 @@
 ﻿using MaterialQ.Models.DataModels;
 using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace MaterialQ.Controllers;
 
@@ -20,7 +21,7 @@ public class ColorController : Controller
     }
 
     // GET: Color/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         return View();
     }
