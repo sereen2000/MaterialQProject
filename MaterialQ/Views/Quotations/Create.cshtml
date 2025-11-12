@@ -51,8 +51,9 @@
                     <tr>
                         <th>Code</th>
                         <th>Name</th>
-                        <th>Price</th>
                         <th>Unit</th>
+                        <th>Unit Price</th>
+                        <th>Vat</th>
                         <th style="width: 60px;"></th>
                     </tr>
                 </thead>
@@ -64,8 +65,9 @@
                             <tr>
                                 <td>@item.Code</td>
                                 <td>@item.Description</td>
-                                <td>@item.Price.ToString("F2")</td>
                                 <td>@item.Unit?.Name</td>
+                                <td>@item.Price.ToString("F2")</td>
+                                <td>@item.Vat</td>
                                 <td class="text-end">
                                     <button type="button" class="btn btn-sm btn-success" onclick="addToCart('@item.Id')">
                                         <i class="bi bi-plus-circle"></i>
@@ -89,28 +91,34 @@
 </div>
 @section Scripts {
     <script>
-        function addToCart(id) {
+              function addToCart(id) {
             // نجيب السلة الحالية من localStorage أو نعمل واحدة جديدة
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-            // نجيب بيانات الصف من الجدول
+           
             const row = event.target.closest("tr");
             const code = row.children[0].innerText.trim();
             const description = row.children[1].innerText.trim();
-            const price = parseFloat(row.children[2].innerText);
 
-            // نشيك إذا المنتج موجود مسبقاً
+            const unit = row.children[2].innerText.trim();
+            const price = parseFloat(row.children[3].innerText.trim()) || 0; 
+            const vat = parseFloat(row.children[4].innerText.trim()) || 0;   
+
+           
             const existing = cart.find(i => i.id === id);
             if (existing) {
                 existing.qty += 1;
             } else {
-                cart.push({
-                    id: id,
-                    code: code,
-                    description: description,
-                    price: price,
-                    qty: 1
-                });
+            cart.push({
+            id: id,
+            code: code,
+            itemDescription: description, 
+            unit: unit,
+            price: price,
+            vat: vat,
+            qty: 1
+        });
+
             }
 
             localStorage.setItem("cart", JSON.stringify(cart));

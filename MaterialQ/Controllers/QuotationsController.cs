@@ -3,10 +3,8 @@ using MaterialQ.Models.DataModels;
 using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,37 +14,25 @@ namespace MaterialQ.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IItemService _itemService;
+
         public QuotationsController(ApplicationDbContext context, IItemService itemService)
         {
             _context = context;
             _itemService = itemService;
         }
 
-        // GET: Quotations
+        // 🧾 عرض كل عروض الأسعار
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Quotations.ToListAsync());
+            var quotations = await _context.Quotations
+                .OrderByDescending(q => q.DateCreated)
+                .ToListAsync();
+
+            return View(quotations);
         }
 
-        // GET: Quotations/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var quotationModel = await _context.Quotations
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (quotationModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(quotationModel);
-        }
-
-        // GET: Quotations/Create
+        // ➕ إنشاء عرض سعر جديد
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             var items = await _itemService.GetAllAsync();
@@ -57,132 +43,132 @@ namespace MaterialQ.Controllers
 
             return View(viewModel);
         }
+
+        // 👁️ عرض محتوى السلة للمراجعة
         [HttpGet]
         public IActionResult ReviewQuotation()
         {
-            return View();
+            return View(); // رح نعمل فيو خاص إلها بعد شوي
         }
-
+      
         [HttpPost]
         public async Task<IActionResult> SaveQuotation([FromBody] QuotationModel quotation)
         {
-            if (quotation == null || quotation.Items == null || !quotation.Items.Any())
-                return BadRequest(new { success = false, message = "Quotation is empty." });
-
-            // توليد رقم عرض سعر (بسيط مبدئياً)
-            quotation.QuotationNumber = $"Q-{DateTime.Now:yyyyMMddHHmmss}";
-            quotation.Status = "Draft";
-            quotation.TotalAmount = quotation.Items.Sum(i => i.Total);
-            quotation.NetAmount = quotation.TotalAmount - quotation.Discount;
-
-            _context.Quotations.Add(quotation);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { success = true, message = "Quotation saved successfully." });
-        }
-        // POST: Quotations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,QuotationNumber,CustomerName,DateCreated,CreatedBy,TotalAmount,Discount,NetAmount,Status")] QuotationModel quotationModel)
-        {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(quotationModel);
+                if (quotation == null || quotation.Items == null || !quotation.Items.Any())
+                    return Json(new { success = false, message = "Quotation is empty." });
+
+                quotation.QuotationNumber = $"Q-{DateTime.Now:yyyyMMddHHmmss}";
+                quotation.DateCreated = DateTime.Now;
+                quotation.Status = "Draft";
+                quotation.TotalAmount = quotation.Items.Sum(i => i.Quantity * i.UnitPrice);
+                quotation.NetAmount = quotation.TotalAmount - quotation.Discount;
+                quotation.CreatedBy = User?.Identity?.Name ?? "System";
+
+                // 🔹 نحفظ رأس العرض أولاً
+                var newQuotation = new QuotationModel
+                {
+                    QuotationNumber = quotation.QuotationNumber,
+                    CustomerName = quotation.CustomerName,
+                    DateCreated = quotation.DateCreated,
+                    CreatedBy = quotation.CreatedBy,
+                    TotalAmount = quotation.TotalAmount,
+                    Discount = quotation.Discount,
+                    NetAmount = quotation.NetAmount,
+                    Status = quotation.Status
+                };
+
+                _context.Quotations.Add(newQuotation);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                // 🔹 نحفظ العناصر المرتبطة
+                foreach (var item in quotation.Items)
+                {
+                    var qi = new QuotationItemsModel
+                    {
+                        ItemId = item.ItemId,
+                        ItemDescription = item.ItemDescription,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice,
+                        QuotationId = newQuotation.Id
+                    };
+                    _context.QuotationItems.Add(qi);
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Quotation saved successfully!" });
             }
-            return View(quotationModel);
+            catch (Exception ex)
+            {
+                // 🔥 نرجّع نص بسيط بدل ما نرسل رسالة EF كاملة
+                return Json(new { success = false, message = "An error occurred while saving: " + ex.InnerException?.Message ?? ex.Message });
+            }
         }
 
-        // GET: Quotations/Edit/5
+        // ✏️ تعديل عرض سعر
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var quotationModel = await _context.Quotations.FindAsync(id);
-            if (quotationModel == null)
-            {
-                return NotFound();
-            }
-            return View(quotationModel);
+            var quotation = await _context.Quotations.FindAsync(id);
+            if (quotation == null) return NotFound();
+
+            return View(quotation);
         }
 
-        // POST: Quotations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,QuotationNumber,CustomerName,DateCreated,CreatedBy,TotalAmount,Discount,NetAmount,Status")] QuotationModel quotationModel)
+        public async Task<IActionResult> Edit(int id, QuotationModel quotation)
         {
-            if (id != quotationModel.Id)
-            {
-                return NotFound();
-            }
+            if (id != quotation.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(quotationModel);
+                    _context.Update(quotation);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!QuotationModelExists(quotationModel.Id))
-                    {
+                    if (!_context.Quotations.Any(e => e.Id == id))
                         return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(quotationModel);
+            return View(quotation);
         }
 
-        // GET: Quotations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // 🗑️ حذف عرض سعر
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var quotation = await _context.Quotations.FindAsync(id);
+            if (quotation == null)
+                return Json(new { success = false, message = "Quotation not found." });
+
+            _context.Quotations.Remove(quotation);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "Quotation deleted successfully!" });
+        }
+        // 👁️ عرض تفاصيل عرض السعر
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var quotationModel = await _context.Quotations
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (quotationModel == null)
-            {
+            var quotation = await _context.Quotations
+                .Include(q => q.Items) // تضمين العناصر المرتبطة
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (quotation == null)
                 return NotFound();
-            }
 
-            return View(quotationModel);
+            return View(quotation);
         }
 
-        // POST: Quotations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var quotationModel = await _context.Quotations.FindAsync(id);
-            if (quotationModel != null)
-            {
-                _context.Quotations.Remove(quotationModel);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool QuotationModelExists(int id)
-        {
-            return _context.Quotations.Any(e => e.Id == id);
-        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MaterialQ.Models.DataModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MaterialQ.Data;
 
@@ -19,20 +20,19 @@ public class ApplicationDbContext : IdentityDbContext
     {
         base.OnModelCreating(modelBuilder);
 
-      
+       
         modelBuilder.Entity<QuotationItemsModel>()
-            .HasOne<QuotationModel>()                       
-            .WithMany(q => q.Items)                         
-            .HasForeignKey("QuotationId")                   
-            .OnDelete(DeleteBehavior.Cascade);              
+            .HasOne(qi => qi.Quotation)
+            .WithMany(q => q.Items)
+            .HasForeignKey(qi => qi.QuotationId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<QuotationItemsModel>()
-            .HasOne<ItemsModel>()                        
-            .WithMany()                                     
+            .HasOne<ItemsModel>()
+            .WithMany()
             .HasForeignKey(p => p.ItemId)
-            .OnDelete(DeleteBehavior.Restrict);             
+            .OnDelete(DeleteBehavior.Restrict);
 
-        
         modelBuilder.Entity<ItemsModel>().ToTable("Items");
         modelBuilder.Entity<QuotationModel>().ToTable("Quotations");
         modelBuilder.Entity<QuotationItemsModel>().ToTable("QuotationItems");
