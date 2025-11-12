@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MaterialQ")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+79e9d7d2483c1efc42147cb7e4ff79b1bc5ea6f0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e4c6dcab65835511cbbc7c4f086fdb925b93c8f")]
 [assembly: System.Reflection.AssemblyProductAttribute("MaterialQ")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MaterialQ")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
