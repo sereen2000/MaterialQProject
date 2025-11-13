@@ -21,10 +21,13 @@ public class QuotationItemsModel
     [Required]
     public decimal UnitPrice { get; set; }
 
-    public decimal Total => Quantity * UnitPrice;
+    public decimal Vat { get; set; }
+
+    public decimal Total => (Quantity * UnitPrice) + Vat;
 
     [ForeignKey("Quotation")]
     public int QuotationId { get; set; }
 
     public QuotationModel Quotation { get; set; }
+
 }

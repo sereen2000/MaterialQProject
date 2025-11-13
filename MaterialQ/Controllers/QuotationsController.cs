@@ -4,9 +4,9 @@ using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
 
 namespace MaterialQ.Controllers
 {
@@ -21,17 +21,46 @@ namespace MaterialQ.Controllers
             _itemService = itemService;
         }
 
-        // 🧾 عرض كل عروض الأسعار
-        public async Task<IActionResult> Index()
+       
+        //public async Task<IActionResult> Index()
+        //{
+        //    var quotations = await _context.Quotations
+        //        .OrderByDescending(q => q.DateCreated)
+        //        .ToListAsync();
+
+        //    return View(quotations);
+        //}
+        public async Task<IActionResult> Index(string? from, string? to, string? status)
         {
-            var quotations = await _context.Quotations
+            var query = _context.Quotations.AsQueryable();
+
+            // 🔹 فلتر التاريخ من
+            if (!string.IsNullOrEmpty(from))
+            {
+                DateTime fromDate = DateTime.Parse(from);
+                query = query.Where(q => q.DateCreated.Date >= fromDate.Date);
+            }
+
+            // 🔹 فلتر التاريخ إلى
+            if (!string.IsNullOrEmpty(to))
+            {
+                DateTime toDate = DateTime.Parse(to);
+                query = query.Where(q => q.DateCreated.Date <= toDate.Date);
+            }
+
+            // 🔹 فلتر الستاتس
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(q => q.Status == status);
+            }
+
+            var result = await query
                 .OrderByDescending(q => q.DateCreated)
                 .ToListAsync();
 
-            return View(quotations);
+            return View(result);
         }
 
-        // ➕ إنشاء عرض سعر جديد
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -62,7 +91,7 @@ namespace MaterialQ.Controllers
                 quotation.QuotationNumber = $"Q-{DateTime.Now:yyyyMMddHHmmss}";
                 quotation.DateCreated = DateTime.Now;
                 quotation.Status = "Draft";
-                quotation.TotalAmount = quotation.Items.Sum(i => i.Quantity * i.UnitPrice);
+                quotation.TotalAmount = quotation.Items.Sum(i => (i.Quantity * i.UnitPrice) + i.Vat);
                 quotation.NetAmount = quotation.TotalAmount - quotation.Discount;
                 quotation.CreatedBy = User?.Identity?.Name ?? "System";
 
@@ -91,6 +120,7 @@ namespace MaterialQ.Controllers
                         ItemDescription = item.ItemDescription,
                         Quantity = item.Quantity,
                         UnitPrice = item.UnitPrice,
+                        Vat = item.Vat,
                         QuotationId = newQuotation.Id
                     };
                     _context.QuotationItems.Add(qi);
@@ -107,7 +137,69 @@ namespace MaterialQ.Controllers
             }
         }
 
-        // ✏️ تعديل عرض سعر
+        [HttpGet]
+        public async Task<IActionResult> ExportToPdf(int id)
+        {
+            var quotation = await _context.Quotations
+                .Include(q => q.Items)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (quotation == null)
+                return NotFound();
+
+            using (var ms = new MemoryStream())
+            {
+                var document = new Document(PageSize.A4, 40, 40, 40, 40);
+                PdfWriter.GetInstance(document, ms);
+                document.Open();
+
+                // 🔹 العنوان
+                var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18);
+                document.Add(new Paragraph($"Quotation #{quotation.QuotationNumber}", titleFont));
+                document.Add(new Paragraph($"Customer: {quotation.CustomerName}"));
+                document.Add(new Paragraph($"Date: {quotation.DateCreated:dd/MM/yyyy}"));
+                document.Add(new Paragraph(" "));
+
+                PdfPTable table = new PdfPTable(5);
+                table.WidthPercentage = 100;
+                table.SetWidths(new float[] { 40, 15, 15, 15, 15 });
+
+                table.AddCell("Item");
+                table.AddCell("Qty");
+                table.AddCell("Unit Price");
+                table.AddCell("VAT");
+                table.AddCell("Total");
+
+                foreach (var item in quotation.Items)
+                {
+                    table.AddCell(item.ItemDescription);
+                    table.AddCell(item.Quantity.ToString());
+                    table.AddCell(item.UnitPrice.ToString("F2"));
+                    table.AddCell(item.Vat.ToString("F2"));
+                    table.AddCell(((item.UnitPrice * item.Quantity) + item.Vat).ToString("F2"));
+                }
+
+
+                foreach (var item in quotation.Items)
+                {
+                    table.AddCell(item.ItemDescription);
+                    table.AddCell(item.Quantity.ToString());
+                    table.AddCell(item.UnitPrice.ToString("F2"));
+                    table.AddCell((item.Quantity * item.UnitPrice).ToString("F2"));
+                }
+
+                document.Add(table);
+                document.Add(new Paragraph(" "));
+
+                // 🔹 الإجماليات
+                document.Add(new Paragraph($"Discount: {quotation.Discount:C2}"));
+                document.Add(new Paragraph($"Net Amount: {quotation.NetAmount:C2}"));
+
+                document.Close();
+
+                return File(ms.ToArray(), "application/pdf", $"Quotation_{quotation.QuotationNumber}.pdf");
+            }
+        }
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
