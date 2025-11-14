@@ -12,6 +12,18 @@
         </ol>
     </nav>
 </div>
+@if (Model.LowStockItems.Any())
+{
+    <div class="alert alert-warning">
+        <h5>Low Stock Alert!</h5>
+        <ul>
+            @foreach (var item in Model.LowStockItems)
+            {
+                <li>@item.Code- @item.Color.Name - Quantity: <span style="color:red">@item.Qty</span></li>
+            }
+        </ul>
+    </div>
+}
 
 <section class="section dashboard">
     <div class="row">
