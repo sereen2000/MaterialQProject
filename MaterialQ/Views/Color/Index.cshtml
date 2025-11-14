@@ -23,6 +23,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Datatables</h5>
+                    <button class="btn btn-primary mb-3" id="addColorBtn"> <i class="ri-add-circle-fill"></i>Add Color</button>
 
                     <!-- Table with stripped rows -->
                     <table class="table datatable">
@@ -48,15 +49,9 @@
                                     <td>@color.Id</td>
                                     <td>@color.Name</td>
                                     <td>
-                                            <a href="@Url.Action("Edit", "Color", new { id = color.Id })"
-                                               class="btn btn-outline-primary btn-sm">
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </a>
+                                            <button class="btn btn-sm btn-outline-primary editColorBtn" data-id="@color.Id">Edit</button>
+                                            <button class="btn btn-sm btn-outline-danger deleteColorBtn" data-id="@color.Id">Delete</button>
 
-                                            <a href="@Url.Action("Delete", "Color", new { id = color.Id })"
-                                               class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i> Delete
-                                            </a>
                                     </td>
                                 </tr>
                             }
@@ -69,6 +64,48 @@
         </div>
     </div>
 </section>
+<div id="modalContainer"></div>
 
+@section Scripts {
+    <script>
+                const modalContainer = document.getElementById('modalContainer');
 
+        // Add Color
+        document.getElementById('addColorBtn').addEventListener('click', async () => {
+            const res = await fetch('/Color/CreateColor');
+            const html = await res.text();
+            modalContainer.innerHTML = html;
+            const modalEl = modalContainer.querySelector('.modal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        });
+
+        // Edit Color
+        document.querySelectorAll('.editColorBtn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.dataset.id;
+                const res = await fetch(`/Color/EditColor?id=${id}`);
+                const html = await res.text();
+                modalContainer.innerHTML = html;
+                const modalEl = modalContainer.querySelector('.modal');
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            });
+        });
+
+        // Delete Color
+        document.querySelectorAll('.deleteColorBtn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.dataset.id;
+                const res = await fetch(`/Color/DeleteColor?id=${id}`);
+                const html = await res.text();
+                modalContainer.innerHTML = html;
+                const modalEl = modalContainer.querySelector('.modal');
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            });
+        });
+
+    </script>
+}
 

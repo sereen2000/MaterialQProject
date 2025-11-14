@@ -165,6 +165,7 @@
 
         let colorsList = [];
 
+        // Show/hide new color input
         colorSelect.addEventListener("change", function () {
             if (this.value === "addNew") {
                 newColorDiv.style.display = "block";
@@ -175,12 +176,14 @@
             }
         });
 
+        // Add color to table & array
         saveColorBtn.addEventListener("click", function () {
             let colorId = colorSelect.value;
             let colorName = colorSelect.options[colorSelect.selectedIndex].text;
+
             if (colorId === "addNew") {
                 colorName = newColorInput.value.trim();
-                colorId = 0; // New color, backend can handle ID
+                colorId = 0; // New color, backend will handle
             }
 
             const qty = parseInt(colorQty.value.trim());
@@ -189,7 +192,7 @@
                 return;
             }
 
-            // Add to table
+            // Add row to table
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${colorName}</td>
@@ -215,10 +218,16 @@
             newColorDiv.style.display = "none";
             newColorInput.value = "";
             colorQty.value = "";
-
             colorModal.hide();
         });
 
+        // Ensure ColorsJson is updated before submit
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function () {
+            colorsJsonInput.value = JSON.stringify(colorsList);
+        });
+
+        // Unit "Add New" alert
         const unitSelect = document.getElementById("unitSelect");
         unitSelect.addEventListener("change", function () {
             if (this.value === "addUnit") {
@@ -228,3 +237,4 @@
         });
     </script>
 }
+

@@ -1,10 +1,12 @@
-﻿@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/LayoutMain.cshtml";
-}
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@model MaterialQ.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/LayoutMain.cshtml";
+}
+
     
     <div class="pagetitle">
         <h1>Dashboard</h1>
@@ -15,6 +17,18 @@
             </ol>
         </nav>
     </div><!-- End Page Title -->
+@if (Model.LowStockItems.Any())
+{
+    <div class="alert alert-warning">
+        <h5>Low Stock Alert!</h5>
+        <ul>
+            @foreach (var item in Model.LowStockItems)
+            {
+                <li>@item.Code- @item.Color.Name - Quantity: <span style="color:red">@item.Qty</span></li>
+            }
+        </ul>
+    </div>
+}
 
     <section class="section dashboard">
         <div class="row">

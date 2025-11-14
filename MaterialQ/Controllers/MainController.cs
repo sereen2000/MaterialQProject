@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MaterialQ.Models.ViewModels;
+using MaterialQ.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MaterialQ.Controllers;
@@ -6,10 +8,27 @@ namespace MaterialQ.Controllers;
 [Authorize]
 public class MainController : Controller
 {
-
-    public IActionResult Index()
+    private readonly IItemService _itemRepo;
+    public MainController( IItemService  service)
     {
-        return View();
+        
+        _itemRepo = service;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var allItems = await _itemRepo.GetAllAsync();
+        var lowStockItems = allItems.Where(i => i.Qty <= 5).ToList();
+
+        var model = new DashboardViewModel
+        {
+            LowStockItems = lowStockItems,
+            TodaySales = 145,        // Example: replace with real logic
+            ThisMonthRevenue = 3264, // Example: replace with real logic
+            ThisYearCustomers = 1244 // Example: replace with real logic
+        };
+
+        return View(model);
     }
     public IActionResult Login()
     {
