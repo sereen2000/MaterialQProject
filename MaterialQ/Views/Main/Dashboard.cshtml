@@ -1,0 +1,129 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/LayoutMain.cshtml";
+}
+
+<div class="pagetitle mb-4">
+    <h1>Quotation Dashboard</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+</div>
+
+<section class="section dashboard">
+    <div class="row">
+
+        <!-- Summary Cards -->
+        <div class="col-md-3">
+            <div class="card info-card text-center shadow-sm border-0">
+                <div class="card-body py-3">
+                    <h6 class="card-title text-muted">Total Quotations</h6>
+                    <h3 class="fw-bold">@((ViewBag.TotalCount ?? 0).ToString())</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card info-card text-center shadow-sm border-0">
+                <div class="card-body py-3">
+                    <h6 class="card-title text-muted">Total Amount</h6>
+                    <h3 class="fw-bold text-success">
+                        @(ViewBag.TotalAmount != null ? String.Format("{0:N2}", ViewBag.TotalAmount) : "0.00") JOD
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card info-card text-center shadow-sm border-0">
+                <div class="card-body py-3">
+                    <h6 class="card-title text-muted">Approved Quotations</h6>
+                    <h3 class="fw-bold text-success">@((ViewBag.ApprovedCount ?? 0).ToString())</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card info-card text-center shadow-sm border-0">
+                <div class="card-body py-3">
+                    <h6 class="card-title text-muted">Draft / Rejected</h6>
+                    <h3 class="fw-bold text-warning">@((ViewBag.DraftCount ?? 0).ToString())</h3>
+                    <small class="text-danger">Rejected: @((ViewBag.RejectedCount ?? 0).ToString())</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Quotations -->
+        <div class="col-12 mt-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Recent Quotations</h5>
+
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Quotation Number</th>
+                                <th>Customer</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.Recent != null && ((IEnumerable<dynamic>)ViewBag.Recent).Any())
+                            {
+                                foreach (var q in ViewBag.Recent)
+                                {
+                                    <tr>
+                                        <td>@q.Id</td>
+                                        <td>@q.QuotationNumber</td>
+                                        <td>@q.CustomerName</td>
+                                        <td>@(q.DateCreated != null ? q.DateCreated.ToString("yyyy-MM-dd") : "-")</td>
+                                        <td>
+                                            @if (q.Status == "Approved")
+                                            {
+                                                <span class="badge bg-success">Approved</span>
+                                            }
+                                            else if (q.Status == "Draft")
+                                            {
+                                                <span class="badge bg-warning text-dark">Draft</span>
+                                            }
+                                            else if (q.Status == "Rejected")
+                                            {
+                                                <span class="badge bg-danger">Rejected</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Unknown</span>
+                                            }
+                                        </td>
+                                        <td>@String.Format("{0:N2}", q.TotalAmount)</td>
+                                        <td>
+                                            <a asp-action="Details" asp-route-id="@q.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        No quotations found.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

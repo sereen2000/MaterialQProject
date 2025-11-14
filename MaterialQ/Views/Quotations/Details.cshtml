@@ -1,0 +1,88 @@
+﻿
+@model MaterialQ.Models.DataModels.QuotationModel
+
+@{
+    ViewData["Title"] = "Quotation Details";
+    Layout = "~/Views/Shared/LayoutMain.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-text me-2"></i> Quotation Details</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Quotation Information</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Quotation Number</dt>
+                <dd class="col-sm-9">@Model.QuotationNumber</dd>
+
+                <dt class="col-sm-3">Customer Name</dt>
+                <dd class="col-sm-9">@Model.CustomerName</dd>
+
+                <dt class="col-sm-3">Date Created</dt>
+                <dd class="col-sm-9">@Model.DateCreated.ToString("yyyy-MM-dd HH:mm")</dd>
+
+                <dt class="col-sm-3">Created By</dt>
+                <dd class="col-sm-9">@Model.CreatedBy</dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">@Model.Status</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3">Quotation Items</h5>
+
+            @if (Model.Items != null && Model.Items.Any())
+            {
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>@item.ItemId</td>
+                                <td>@item.ItemDescription</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.UnitPrice.ToString("F2")</td>
+                                <td>@(item.Quantity * item.UnitPrice).ToString("F2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted text-center py-3">No items found for this quotation.</p>
+            }
+
+            <div class="d-flex justify-content-end mt-3">
+                <div class="text-end">
+                    <h6>Total Amount: <span class="fw-bold">@Model.TotalAmount.ToString("F2") JOD</span></h6>
+                    <h6>Discount: <span class="fw-bold">@Model.Discount.ToString("F2") JOD</span></h6>
+                    <h5 class="text-success">Net Amount: <span class="fw-bold">@Model.NetAmount.ToString("F2") JOD</span></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
