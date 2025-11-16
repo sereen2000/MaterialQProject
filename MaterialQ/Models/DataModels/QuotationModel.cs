@@ -15,7 +15,7 @@ namespace MaterialQ.Models.DataModels
             [StringLength(100)]
             public string QuotationNumber { get; set; }  
 
-            [Required]
+            [Required(ErrorMessage = "Company name is required")]
             [StringLength(200)]
             public string CustomerName { get; set; }      
 
@@ -32,32 +32,12 @@ namespace MaterialQ.Models.DataModels
             public decimal NetAmount { get; set; }        
 
             [StringLength(50)]
-            public string Status { get; set; }            
+            public string Status { get; set; }
+        public List<QuotationItemsModel> Items { get; set; } = new();
 
-            public List<QuotationItemsModel> Items { get; set; } = new(); 
-        }
-
-        public class QuotationItemsModel
-        {
-            [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-
-            [Required]
-        public int ItemId { get; set; } 
-        [Required]
-           
-       
-        public string ItemDescription { get; set; }
-
-
-        [Required]
-            public int Quantity { get; set; }
-
-            [Required]
-            public decimal UnitPrice { get; set; }       
-            public decimal Total => Quantity * UnitPrice; 
-        }
     }
+
+
+}
 
 

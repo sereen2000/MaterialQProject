@@ -32,27 +32,6 @@
 
     <!-- Template Main CSS File -->
     <link href="~/css/style.css" rel="stylesheet">
-    <style>
-        /* إزالة أي تباعد من المحتوى الرئيسي */
-        .main {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-        }
-
-        /* في حال الهيدر ثابت (fixed) */
-        header.navbar, header.header, nav.navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1030;
-        }
-
-        body {
-            margin: 100px;
-            padding: 0;
-        }
-    </style>
-
 </head>
 
 <body>
@@ -168,7 +147,12 @@
                     <span>Add Quotation</span>
                 </a>
             </li>
-
+            <li class="nav-item">
+                <a class="nav-link collapsed" asp-controller="RFQ" asp-action="Create">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>Request For Quotation</span>
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="">
                     <i class="ri-dashboard-2-fill"></i><span>Materials Info</span><i class="bi bi-chevron-down ms-auto"></i>

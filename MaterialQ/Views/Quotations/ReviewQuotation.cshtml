@@ -19,22 +19,39 @@
                     <tr>
                         <th>Code</th>
                         <th>Description</th>
-                        <th>Price</th>
+                        <th>Unit</th>
+                        <th>Unit Price</th>
+                        <th>VAT</th>
                         <th>Quantity</th>
                         <th>Total</th>
                         <th style="width: 60px;"></th>
                     </tr>
                 </thead>
-                <tbody id="cartBody">
-                
-                </tbody>
+                <tbody id="cartBody"></tbody>
             </table>
+            <p id="companyError" class="text-danger small" style="display:none;">
+                Company name is required
+            </p>
+            <div class="mb-2 d-flex align-items-center">
+                <label class="fw-bold me-2">Company Name:</label>
+                <input type="text" id="companyName" class="form-control form-control-sm"
+                       placeholder="Enter company name"
+                       style="width: 250px;">
+            </div>
 
-            <div class="d-flex justify-content-end mt-4">
-                <h5 class="me-4">
-                    Subtotal:
+            <div class="d-flex flex-column align-items-end mt-4">
+                <div class="mb-2">
+                    <label class="fw-bold me-2">Subtotal:</label>
                     <span id="subtotal" class="text-primary fw-bold">0.00</span> JOD
-                </h5>
+                </div>
+                <div class="mb-2 d-flex align-items-center">
+                    <label class="fw-bold me-2">Discount (%):</label>
+                    <input type="number" id="discount" class="form-control form-control-sm w-auto text-center" value="0" min="0" max="100" style="width: 80px;">
+                </div>
+                <div>
+                    <label class="fw-bold me-2">Net Amount:</label>
+                    <span id="netAmount" class="text-success fw-bold">0.00</span> JOD
+                </div>
             </div>
         </div>
     </div>
@@ -53,38 +70,51 @@
 @section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            loadCart();
+
+            document.getElementById("discount").addEventListener("input", updateNetAmount);
+        });
+
+        function loadCart() {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
             const cartBody = document.getElementById("cartBody");
             const subtotalEl = document.getElementById("subtotal");
+            const netEl = document.getElementById("netAmount");
             let subtotal = 0;
+            cartBody.innerHTML = "";
 
             if (cart.length === 0) {
                 cartBody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
+                        <td colspan="8" class="text-center text-muted py-4">
                             No items added yet.
                         </td>
                     </tr>`;
+                subtotalEl.textContent = "0.00";
+                netEl.textContent = "0.00";
                 return;
             }
 
             cart.forEach(item => {
-                const total = (item.price * item.qty).toFixed(2);
-                subtotal += parseFloat(total);
+                const vat = parseFloat(item.vat || 0);
+                const total = (item.price * item.qty) + vat;
+                subtotal += total;
 
                 const row = `
                     <tr>
                         <td>${item.code}</td>
                         <td>${item.description}</td>
+                        <td>${item.unit}</td>
                         <td>${item.price.toFixed(2)}</td>
+                        <td>${vat.toFixed(2)}</td>
                         <td>
                             <input type="number" min="1" value="${item.qty}"
                                 class="form-control form-control-sm text-center qty-input"
                                 data-id="${item.id}">
                         </td>
-                        <td>${total}</td>
+                        <td>${total.toFixed(2)}</td>
                         <td class="text-end">
-                            <button type="button" class="btn btn-sm btn-danger" onclick="removeFromCart(${item.id})">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeFromCart('${item.id}')">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </td>
@@ -93,47 +123,89 @@
             });
 
             subtotalEl.textContent = subtotal.toFixed(2);
-        });
+            updateNetAmount();
 
-        // حذف عنصر من السلة
-        function removeFromCart(id) {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            cart = cart.filter(i => i.id !== id);
-            localStorage.setItem("cart", JSON.stringify(cart));
-            location.reload();
+            document.querySelectorAll(".qty-input").forEach(input => {
+                input.addEventListener("change", e => {
+                    updateQty(e.target.dataset.id, parseInt(e.target.value));
+                });
+            });
         }
 
-        // حفظ الكوتيشن فعليًا في قاعدة البيانات
+        // تحديث الكمية
+        function updateQty(id, newQty) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const item = cart.find(i => i.id == id);
+            if (item) {
+                item.qty = newQty;
+                localStorage.setItem("cart", JSON.stringify(cart));
+                loadCart();
+            }
+        }
+
+        function removeFromCart(id) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart = cart.filter(i => i.id != id);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            loadCart();
+        }
+
+        function updateNetAmount() {
+            const subtotal = parseFloat(document.getElementById("subtotal").textContent) || 0;
+            const discountPercent = parseFloat(document.getElementById("discount").value) || 0;
+            const discountAmount = subtotal * (discountPercent / 100);
+            const net = subtotal - discountAmount;
+            document.getElementById("netAmount").textContent = net.toFixed(2);
+        }
+                function clearError() {
+            document.getElementById("companyError").style.display = "none";
+        }
+
         async function saveQuotation() {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
             if (cart.length === 0) return alert("Cart is empty!");
 
+            const discount = parseFloat(document.getElementById("discount").value) || 0;
+            const subtotal = parseFloat(document.getElementById("subtotal").textContent) || 0;
+            const net = parseFloat(document.getElementById("netAmount").textContent) || 0;
+            const companyName = document.getElementById("companyName").value.trim();
+
+            if (companyName.length === 0) {
+            document.getElementById("companyError").style.display = "block";
+            return; 
+        }
             const quotation = {
-                customerName: "Walk-in Customer",
-                discount: 0,
-                totalAmount: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
-                netAmount: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
+                customerName: document.getElementById("companyName").value,
+                discount: discount,
+                totalAmount: subtotal,
+                netAmount: net,
                 items: cart.map(i => ({
-                    productId: i.id,             // متطابق مع الموديل الحالي عندك
-                    productName: i.description,  // Description من الصفحة السابقة
-                    quantity: i.qty,
-                    unitPrice: i.price
-                }))
+                               itemId: parseInt(i.id),
+        itemDescription: i.itemDescription,
+                            quantity: i.qty,
+                            unitPrice: i.price,
+                            vat: i.vat
+                                    }))
             };
 
-            const res = await fetch('/Quotations/SaveQuotation', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(quotation)
-            });
+            try {
+                const res = await fetch('/Quotations/SaveQuotation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(quotation)
+                });
 
-            const data = await res.json();
-            if (data.success) {
-                alert("Quotation saved successfully!");
-                localStorage.removeItem("cart");
-                window.location.href = '/Quotations/Index';
-            } else {
-                alert(data.message || "Failed to save quotation");
+                const data = await res.json();
+                if (data.success) {
+                    alert("✅ Quotation saved successfully!");
+                    localStorage.removeItem("cart");
+                    window.location.href = '/Quotations/Index';
+                } else {
+                    alert("❌ " + (data.message || "Failed to save quotation"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("⚠️ Error saving quotation.");
             }
         }
     </script>

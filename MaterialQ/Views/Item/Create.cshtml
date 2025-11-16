@@ -1,5 +1,240 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Items Data Table";
+    Layout = "~/Views/Shared/LayoutMain.cshtml";
 }
+
+<div class="pagetitle">
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item">Items</li>
+            <li class="breadcrumb-item active">Create Item</li>
+        </ol>
+    </nav>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">New Item</h5>
+
+                <!-- Form -->
+                <form method="post" enctype="multipart/form-data">
+
+                    <!-- Item Image -->
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label"><i class="ri-image-add-fill"></i>  Item Image</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="file" id="formFile" name="ImageFile">
+                        </div>
+                    </div>
+
+                    <!-- Item Code -->
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label"><i class="ri-barcode-line"></i>  Item Code</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="ItemCode" required>
+                        </div>
+                    </div>
+
+                    <!-- Item Description -->
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label"><i class="bi bi-text-paragraph"></i>  Item Description</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="Description" required>
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label"><i class="ri-money-dollar-circle-line"></i>  Price</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" name="Price" placeholder="Enter price" min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <!-- VAT -->
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label"><i class="bx bx-money"></i>  VAT</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" name="VAT" placeholder="Enter VAT" min="0" step="0.01" required>
+                        </div>
+                    </div>
+
+                    <!-- Colors & Quantities -->
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label"><i class="ri-stock-line"></i> Colors & Quantities</label>
+                        <div class="col-sm-10">
+                            <table class="table table-bordered" id="colorTable">
+                                <thead>
+                                    <tr>
+                                        <th>Color</th>
+                                        <th>Quantity</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#colorModal">
+                                <i class="ri-add-circle-fill"></i> Add Color
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Unit -->
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label"><i class="bx bx-wrench"></i>  Unit</label>
+                        <div class="col-sm-10">
+                            <select id="unitSelect" class="form-select" name="Unit" required>
+                                <option selected disabled>Select item unit</option>
+                                @foreach (var unit in ViewBag.Units)
+                                {
+                                    <option value="@unit.Id">@unit.Name</option>
+                                }
+                                <option value="addUnit">➕ Add New</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Color Modal -->
+                    <div class="modal fade" id="colorModal" tabindex="-1" aria-labelledby="colorModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="colorModalLabel"> Add Color & Quantity</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Color</label>
+                                        <select id="colorSelect" class="form-select">
+                                            <option selected disabled>Select Color</option>
+                                            @foreach (var color in ViewBag.Colors)
+                                            {
+                                                <option value="@color.Id">@color.Name</option>
+                                            }
+                                            <option value="addNew">➕ Add New Color</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Input for new color -->
+                                    <div class="mb-3" id="newColorDiv" style="display:none;">
+                                        <label class="form-label">New Color Name</label>
+                                        <input type="text" id="newColorInput" class="form-control" placeholder="Enter new color">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Quantity</label>
+                                        <input type="number" id="newColorQty" class="form-control" placeholder="Enter quantity" min="1">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" id="saveColorBtn" class="btn btn-primary"><i class="ri-add-circle-fill"></i>Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="row mb-3">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary">Submit Form</button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="ColorsJson" id="ColorsJson">
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const colorSelect = document.getElementById("colorSelect");
+        const newColorDiv = document.getElementById("newColorDiv");
+        const newColorInput = document.getElementById("newColorInput");
+        const colorQty = document.getElementById("newColorQty");
+        const saveColorBtn = document.getElementById("saveColorBtn");
+        const colorTableBody = document.querySelector("#colorTable tbody");
+        const colorModal = new bootstrap.Modal(document.getElementById("colorModal"));
+        const colorsJsonInput = document.getElementById("ColorsJson");
+
+        let colorsList = [];
+
+        // Show/hide new color input
+        colorSelect.addEventListener("change", function () {
+            if (this.value === "addNew") {
+                newColorDiv.style.display = "block";
+                newColorInput.value = "";
+                newColorInput.focus();
+            } else {
+                newColorDiv.style.display = "none";
+            }
+        });
+
+        // Add color to table & array
+        saveColorBtn.addEventListener("click", function () {
+            let colorId = colorSelect.value;
+            let colorName = colorSelect.options[colorSelect.selectedIndex].text;
+
+            if (colorId === "addNew") {
+                colorName = newColorInput.value.trim();
+                colorId = 0; // New color, backend will handle
+            }
+
+            const qty = parseInt(colorQty.value.trim());
+            if (!colorName || !qty || qty <= 0) {
+                alert("Please select a color and enter a valid quantity");
+                return;
+            }
+
+            // Add row to table
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${colorName}</td>
+                <td>${qty}</td>
+                <td><button type="button" class="btn btn-danger btn-sm deleteRow">🗑️</button></td>
+            `;
+            colorTableBody.appendChild(row);
+
+            // Add to array
+            colorsList.push({ ColorId: parseInt(colorId), ColorName: colorName, Quantity: qty });
+            colorsJsonInput.value = JSON.stringify(colorsList);
+
+            // Delete row
+            row.querySelector(".deleteRow").addEventListener("click", function () {
+                const index = Array.from(colorTableBody.children).indexOf(row);
+                colorsList.splice(index, 1);
+                colorsJsonInput.value = JSON.stringify(colorsList);
+                row.remove();
+            });
+
+            // Reset modal
+            colorSelect.selectedIndex = 0;
+            newColorDiv.style.display = "none";
+            newColorInput.value = "";
+            colorQty.value = "";
+            colorModal.hide();
+        });
+
+        // Ensure ColorsJson is updated before submit
+        const form = document.querySelector("form");
+        form.addEventListener("submit", function () {
+            colorsJsonInput.value = JSON.stringify(colorsList);
+        });
+
+        // Unit "Add New" alert
+        const unitSelect = document.getElementById("unitSelect");
+        unitSelect.addEventListener("change", function () {
+            if (this.value === "addUnit") {
+                alert("You can add your 'Add Unit' modal here.");
+                this.selectedIndex = 0;
+            }
+        });
+    </script>
+}
+
