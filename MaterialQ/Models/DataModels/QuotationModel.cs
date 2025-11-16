@@ -15,7 +15,7 @@ namespace MaterialQ.Models.DataModels
             [StringLength(100)]
             public string QuotationNumber { get; set; }  
 
-            [Required]
+            [Required(ErrorMessage = "Company name is required")]
             [StringLength(200)]
             public string CustomerName { get; set; }      
 
