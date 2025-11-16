@@ -1,6 +1,8 @@
 ﻿using MaterialQ.Models.DataModels;
+using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MaterialQ.Controllers;
 
@@ -20,56 +22,56 @@ public class UnitController : Controller
         return View(units);
     }
 
-    // GET: /Unit/Create
-    public IActionResult Create()
+
+    // Create Unit Modal
+    [HttpGet]
+    public IActionResult CreateUnit()
     {
-        return View();
+        return PartialView("_CreateUnitModal");
     }
 
-    // POST: /Unit/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(UnitModel unit)
+    public async Task<IActionResult> CreateUnit(UnitModel model)
     {
-        if (ModelState.IsValid)
-        {
-            await _unitService.AddAsync(unit);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(unit);
+        if (!ModelState.IsValid) return BadRequest();
+        await _unitService.AddAsync(model);
+        return RedirectToAction(nameof(Index));
     }
 
-    // GET: /Unit/Edit/5
-    public async Task<IActionResult> Edit(int id)
+    // Edit Unit Modal
+    [HttpGet]
+    public async Task<IActionResult> EditUnit(int id)
     {
         var unit = await _unitService.GetByIdAsync(id);
         if (unit == null) return NotFound();
-        return View(unit);
+        return PartialView("_EditUnitModal", unit);
     }
 
-    // POST: /Unit/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, UnitModel unit)
+    public async Task<IActionResult> EditUnitConfirmed(UnitModel model)
     {
-        if (id != unit.Id) return BadRequest();
-
-        if (ModelState.IsValid)
-        {
-            await _unitService.UpdateAsync(unit);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(unit);
+        if (!ModelState.IsValid) return BadRequest();
+        await _unitService.UpdateAsync(model);
+        return RedirectToAction(nameof(Index));
     }
 
-    // POST: /Unit/DeleteUnit
-    [HttpPost]
+    // Delete Unit Modal
+    [HttpGet]
     public async Task<IActionResult> DeleteUnit(int id)
     {
         var unit = await _unitService.GetByIdAsync(id);
-        if (unit == null) return Json(new { success = false, message = "Unit not found" });
-
-        await _unitService.DeleteAsync(id);
-        return Json(new { success = true, message = "Unit deleted successfully" });
+        if (unit == null) return NotFound();
+        return PartialView("_DeleteUnitModal", unit);
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteUnitConfirmed(int id)
+    {
+        await _unitService.DeleteAsync(id);
+        return RedirectToAction(nameof(Index));
+    }
+
 }

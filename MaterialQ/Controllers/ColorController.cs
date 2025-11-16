@@ -19,56 +19,55 @@ public class ColorController : Controller
         return View(colors);
     }
 
-    // GET: Color/Create
-    public IActionResult Create()
+    // CREATE
+    [HttpGet]
+    public IActionResult CreateColor()
     {
-        return View();
+        return PartialView("_CreateColorModal");
     }
 
-    // POST: Color/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(ColorsModel color)
+    public async Task<IActionResult> CreateColor(ColorsModel model)
     {
-        if (ModelState.IsValid)
-        {
-            await _colorService.AddAsync(color);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(color);
+        if (!ModelState.IsValid) return BadRequest();
+        await _colorService.AddAsync(model);
+        return RedirectToAction(nameof(Index));
     }
 
-    // GET: Color/Edit/5
-    public async Task<IActionResult> Edit(int id)
+    // EDIT
+    [HttpGet]
+    public async Task<IActionResult> EditColor(int id)
     {
         var color = await _colorService.GetByIdAsync(id);
         if (color == null) return NotFound();
-        return View(color);
+        return PartialView("_EditColorModal", color);
     }
 
-    // POST: Color/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, ColorsModel color)
+    public async Task<IActionResult> EditColorConfirmed(ColorsModel model)
     {
-        if (id != color.Id) return BadRequest();
-
-        if (ModelState.IsValid)
-        {
-            await _colorService.UpdateAsync(color);
-            return RedirectToAction(nameof(Index));
-        }
-        return View(color);
+        if (!ModelState.IsValid) return BadRequest();
+        await _colorService.UpdateAsync(model);
+        return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost]
+    // DELETE
+    [HttpGet]
     public async Task<IActionResult> DeleteColor(int id)
     {
         var color = await _colorService.GetByIdAsync(id);
-        if (color == null) return Json(new { success = false, message = "Color not found" });
+        if (color == null) return NotFound();
+        return PartialView("_DeleteColorModal", color);
+    }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteColorConfirmed(int id)
+    {
         await _colorService.DeleteAsync(id);
-        return Json(new { success = true, message = "Color deleted successfully" });
+        return RedirectToAction(nameof(Index));
     }
 
 

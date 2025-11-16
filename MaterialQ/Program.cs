@@ -24,6 +24,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IColorService, ColorService>();
 builder.Services.AddScoped<IUnitService, UnitService>();
+builder.Services.AddHostedService<CheckStockService>();
 
 
 var app = builder.Build();
@@ -52,6 +53,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Main}/{action=dashboard}/{id?}");
+    pattern: "{controller=Main}/{action=index}/{id?}");
 app.MapRazorPages();
 app.Run();

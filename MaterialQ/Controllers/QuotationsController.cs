@@ -3,12 +3,10 @@ using MaterialQ.Models.DataModels;
 using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using System.IO;
 
 namespace MaterialQ.Controllers
 {
@@ -16,37 +14,43 @@ namespace MaterialQ.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IItemService _itemService;
+
         public QuotationsController(ApplicationDbContext context, IItemService itemService)
         {
             _context = context;
             _itemService = itemService;
         }
 
-        // GET: Quotations
-        public async Task<IActionResult> Index()
+       
+        public async Task<IActionResult> Index(string? from, string? to, string? status)
         {
-            return View(await _context.Quotations.ToListAsync());
-        }
+            var query = _context.Quotations.AsQueryable();
 
-        // GET: Quotations/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            if (!string.IsNullOrEmpty(from))
             {
-                return NotFound();
+                DateTime fromDate = DateTime.Parse(from);
+                query = query.Where(q => q.DateCreated.Date >= fromDate.Date);
             }
 
-            var quotationModel = await _context.Quotations
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (quotationModel == null)
+            if (!string.IsNullOrEmpty(to))
             {
-                return NotFound();
+                DateTime toDate = DateTime.Parse(to);
+                query = query.Where(q => q.DateCreated.Date <= toDate.Date);
             }
 
-            return View(quotationModel);
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(q => q.Status == status);
+            }
+
+            var result = await query
+                .OrderByDescending(q => q.DateCreated)
+                .ToListAsync();
+
+            return View(result);
         }
 
-        // GET: Quotations/Create
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             var items = await _itemService.GetAllAsync();
@@ -57,132 +61,247 @@ namespace MaterialQ.Controllers
 
             return View(viewModel);
         }
+
         [HttpGet]
         public IActionResult ReviewQuotation()
         {
             return View();
         }
-
+      
         [HttpPost]
         public async Task<IActionResult> SaveQuotation([FromBody] QuotationModel quotation)
         {
-            if (quotation == null || quotation.Items == null || !quotation.Items.Any())
-                return BadRequest(new { success = false, message = "Quotation is empty." });
-
-            // توليد رقم عرض سعر (بسيط مبدئياً)
-            quotation.QuotationNumber = $"Q-{DateTime.Now:yyyyMMddHHmmss}";
-            quotation.Status = "Draft";
-            quotation.TotalAmount = quotation.Items.Sum(i => i.Total);
-            quotation.NetAmount = quotation.TotalAmount - quotation.Discount;
-
-            _context.Quotations.Add(quotation);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { success = true, message = "Quotation saved successfully." });
-        }
-        // POST: Quotations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,QuotationNumber,CustomerName,DateCreated,CreatedBy,TotalAmount,Discount,NetAmount,Status")] QuotationModel quotationModel)
-        {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(quotationModel);
+                if (quotation == null || quotation.Items == null || !quotation.Items.Any())
+                    return Json(new { success = false, message = "Quotation is empty." });
+
+                quotation.QuotationNumber = $"Q-{DateTime.Now:yyyyMMddHHmmss}";
+                quotation.DateCreated = DateTime.Now;
+                quotation.Status = "Draft";
+                quotation.TotalAmount = quotation.Items.Sum(i => (i.Quantity * i.UnitPrice) + i.Vat);
+                quotation.NetAmount = quotation.TotalAmount - quotation.Discount;
+                quotation.CreatedBy = User?.Identity?.Name ?? "System";
+
+                var newQuotation = new QuotationModel
+                {
+                    QuotationNumber = quotation.QuotationNumber,
+                    CustomerName = quotation.CustomerName,
+                    DateCreated = quotation.DateCreated,
+                    CreatedBy = quotation.CreatedBy,
+                    TotalAmount = quotation.TotalAmount,
+                    Discount = quotation.Discount,
+                    NetAmount = quotation.NetAmount,
+                    Status = quotation.Status
+                };
+
+                _context.Quotations.Add(newQuotation);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                foreach (var item in quotation.Items)
+                {
+                    var qi = new QuotationItemsModel
+                    {
+                        ItemId = item.ItemId,
+                        ItemDescription = item.ItemDescription,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice,
+                        Vat = item.Vat,
+                        QuotationId = newQuotation.Id
+                    };
+                    _context.QuotationItems.Add(qi);
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Quotation saved successfully!" });
             }
-            return View(quotationModel);
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while saving: " + ex.InnerException?.Message ?? ex.Message });
+            }
         }
 
-        // GET: Quotations/Edit/5
+        [HttpGet]
+        public async Task<IActionResult> ExportToPdf(int id)
+        {
+            var quotation = await _context.Quotations
+                .Include(q => q.Items)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (quotation == null)
+                return NotFound();
+
+            using (var ms = new MemoryStream())
+            {
+                var document = new Document(PageSize.A4, 40, 40, 40, 40);
+                PdfWriter.GetInstance(document, ms);
+                document.Open();
+
+                // 🔹 العنوان
+                var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18);
+                document.Add(new Paragraph($"Quotation #{quotation.QuotationNumber}", titleFont));
+                document.Add(new Paragraph($"Customer: {quotation.CustomerName}"));
+                document.Add(new Paragraph($"Date: {quotation.DateCreated:dd/MM/yyyy}"));
+                document.Add(new Paragraph(" "));
+
+                PdfPTable table = new PdfPTable(5);
+                table.WidthPercentage = 100;
+                table.SetWidths(new float[] { 40, 15, 15, 15, 15 });
+
+                table.AddCell("Item");
+                table.AddCell("Qty");
+                table.AddCell("Unit Price");
+                table.AddCell("VAT");
+                table.AddCell("Total");
+
+                foreach (var item in quotation.Items)
+                {
+                    table.AddCell(item.ItemDescription);
+                    table.AddCell(item.Quantity.ToString());
+                    table.AddCell(item.UnitPrice.ToString("F2"));
+                    table.AddCell(item.Vat.ToString("F2"));
+                    table.AddCell(((item.UnitPrice * item.Quantity) + item.Vat).ToString("F2"));
+                }
+
+
+                foreach (var item in quotation.Items)
+                {
+                    table.AddCell(item.ItemDescription);
+                    table.AddCell(item.Quantity.ToString());
+                    table.AddCell(item.UnitPrice.ToString("F2"));
+                    table.AddCell((item.Quantity * item.UnitPrice).ToString("F2"));
+                }
+
+                document.Add(table);
+                document.Add(new Paragraph(" "));
+
+                document.Add(new Paragraph($"Discount: {quotation.Discount:C2}"));
+                document.Add(new Paragraph($"Net Amount: {quotation.NetAmount:C2}"));
+
+                document.Close();
+
+                return File(ms.ToArray(), "application/pdf", $"Quotation_{quotation.QuotationNumber}.pdf");
+            }
+        }
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var quotationModel = await _context.Quotations.FindAsync(id);
-            if (quotationModel == null)
-            {
-                return NotFound();
-            }
-            return View(quotationModel);
+            var quotation = await _context.Quotations.FindAsync(id);
+            if (quotation == null) return NotFound();
+
+            return View(quotation);
         }
-
-        // POST: Quotations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,QuotationNumber,CustomerName,DateCreated,CreatedBy,TotalAmount,Discount,NetAmount,Status")] QuotationModel quotationModel)
+        public async Task<IActionResult> UpdateQuotation([FromBody] QuotationModel model)
         {
-            if (id != quotationModel.Id)
-            {
-                return NotFound();
-            }
+            if (model == null || model.Items == null)
+                return Json(new { success = false, message = "Invalid data" });
 
-            if (ModelState.IsValid)
+            var quotation = await _context.Quotations
+                .Include(q => q.Items)
+                .FirstOrDefaultAsync(q => q.Id == model.Id);
+
+            if (quotation == null)
+                return Json(new { success = false, message = "Quotation not found" });
+
+            quotation.CustomerName = model.CustomerName;
+            quotation.Discount = model.Discount;
+            quotation.TotalAmount = model.TotalAmount;
+            quotation.NetAmount = model.NetAmount;
+
+            quotation.Items.Clear();
+            foreach (var item in model.Items)
             {
-                try
+                quotation.Items.Add(new QuotationItemsModel
                 {
-                    _context.Update(quotationModel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!QuotationModelExists(quotationModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(quotationModel);
-        }
-
-        // GET: Quotations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var quotationModel = await _context.Quotations
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (quotationModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(quotationModel);
-        }
-
-        // POST: Quotations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var quotationModel = await _context.Quotations.FindAsync(id);
-            if (quotationModel != null)
-            {
-                _context.Quotations.Remove(quotationModel);
+                    ItemId = item.ItemId,
+                    ItemDescription = item.ItemDescription,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                    Vat = item.Vat
+                });
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return Json(new { success = true });
         }
 
-        private bool QuotationModelExists(int id)
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
         {
-            return _context.Quotations.Any(e => e.Id == id);
+            var quotation = await _context.Quotations
+                .Include(q => q.Items)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (quotation == null)
+                return NotFound();
+
+            return View(quotation);
         }
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, QuotationModel updated)
+        {
+            var quotation = await _context.Quotations
+                .Include(q => q.Items)
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (quotation == null)
+                return NotFound();
+
+            quotation.CustomerName = updated.CustomerName;
+            quotation.Discount = updated.Discount;
+            quotation.NetAmount = updated.NetAmount;
+            quotation.TotalAmount = updated.TotalAmount;
+
+            _context.QuotationItems.RemoveRange(quotation.Items);
+
+            foreach (var item in updated.Items)
+            {
+                quotation.Items.Add(new QuotationItemsModel
+                {
+                    ItemId = item.ItemId,
+                    ItemDescription = item.ItemDescription,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.UnitPrice,
+                    Vat = item.Vat
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var quotation = await _context.Quotations.FindAsync(id);
+            if (quotation == null)
+                return Json(new { success = false, message = "Quotation not found." });
+
+            _context.Quotations.Remove(quotation);
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "Quotation deleted successfully!" });
+        }
+       
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var quotation = await _context.Quotations
+                .Include(q => q.Items) 
+                .FirstOrDefaultAsync(q => q.Id == id);
+
+            if (quotation == null)
+                return NotFound();
+
+            return View(quotation);
+        }
+
     }
 }
