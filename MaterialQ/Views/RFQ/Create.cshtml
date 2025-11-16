@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Request for Quotation";
+    Layout = "~/Views/Shared/LayoutMain.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="bi bi-envelope-paper"></i> Request for Quotation</h2>
+
+    <div class="card shadow-sm p-4">
+
+        <h5 class="mb-3">Company Information</h5>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">From (Your Company)</label>
+                <input type="text" id="fromCompany" class="form-control" placeholder="Your company name" required />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">To (Supplier Company)</label>
+                <input type="text" id="toCompany" class="form-control" placeholder="Supplier company name" required />
+            </div>
+        </div>
+
+        <h5 class="mb-3">Requested Items</h5>
+
+        <table class="table table-bordered" id="itemsTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Notes / Specifications</th>
+                    <th style="width: 60px;"></th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <button class="btn btn-primary mb-3" onclick="addRow()">
+            <i class="bi bi-plus-circle"></i> Add Item
+        </button>
+
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-success" onclick="submitRFQ()">
+                <i class="bi bi-filetype-pdf"></i> Export PDF
+            </button>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        function addRow() {
+            let table = document.querySelector("#itemsTable tbody");
+
+            let row = `
+                <tr>
+                    <td><input class="form-control name" placeholder="Product name" /></td>
+                    <td><input class="form-control qty" placeholder="Quantity" /></td>
+                    <td><input class="form-control notes" placeholder="Notes / Specifications" /></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()"><i class="bi bi-trash"></i></button></td>
+                </tr>
+            `;
+
+            table.insertAdjacentHTML("beforeend", row);
+        }
+
+        function submitRFQ() {
+            let items = [];
+
+            document.querySelectorAll("#itemsTable tbody tr").forEach(r => {
+                items.push({
+                    Name: r.querySelector(".name").value,
+                    Qty: r.querySelector(".qty").value,
+                    Notes: r.querySelector(".notes").value
+                });
+            });
+
+            let data = {
+                FromCompany: document.getElementById("fromCompany").value,
+                ToCompany: document.getElementById("toCompany").value,
+                Items: items
+            };
+
+            fetch("/RFQ/GeneratePdf", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.blob())
+            .then(blob => {
+                let link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = "RFQ.pdf";
+                link.click();
+            });
+        }
+
+    </script>
+}
