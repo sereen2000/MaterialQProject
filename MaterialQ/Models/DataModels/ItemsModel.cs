@@ -10,11 +10,10 @@ public class ItemsModel
     public float Price { get; set; }
     public float Vat { get; set; }
 
-    // Foreign key for Color
-    public int ColorId { get; set; }
-    public ColorsModel Color { get; set; }
-
     // Foreign key for Unit
     public int UnitId { get; set; }
     public UnitModel Unit { get; set; }
+
+    public List<ColorItemModel> ColorItems { get; set; } = new();
+
 }

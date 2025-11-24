@@ -1,9 +1,11 @@
-﻿using MaterialQ.Models.ViewModels;
+﻿using MaterialQ.Data;
+using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
-using MaterialQ.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace MaterialQ.Controllers;
 
@@ -12,29 +14,51 @@ public class MainController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly IItemService _itemRepo;
+    private readonly IItemColorService _itemColorRepo;
 
 
-    public MainController(ApplicationDbContext context, IItemService itemRepo)
+    public MainController(ApplicationDbContext context, IItemService itemRepo , IItemColorService itemColorRepo)
     {
         _context = context;
         _itemRepo = itemRepo;
+        _itemColorRepo = itemColorRepo;
     }
 
-    public async Task<IActionResult> Index()
-    {
-        var allItems = await _itemRepo.GetAllAsync();
-        var lowStockItems = allItems.Where(i => i.Qty <= 5).ToList();
+   public async Task<IActionResult> Index()
+{
+    // جلب كل العناصر مع الألوان
+    var allItems = await _context.Items
+        .Include(i => i.ColorItems)
+            .ThenInclude(ci => ci.Color)
+        .ToListAsync();
 
-        var model = new DashboardViewModel
+    // فلترة العناصر منخفضة المخزون بناءً على مجموع الكميات لكل لون
+    var lowStockItems = allItems
+        .SelectMany(i => i.ColorItems.Select(ci => new
         {
-            LowStockItems = lowStockItems,
-            TodaySales = 145,        // Example: replace with real logic
-            ThisMonthRevenue = 3264, // Example: replace with real logic
-            ThisYearCustomers = 1244 // Example: replace with real logic
-        };
+            ItemCode = i.Code,
+            ColorName = ci.Color.Name,
+            Qty = ci.Quantity
+        }))
+        .Where(x => x.Qty <= 5)
+        .ToList();
 
-        return View(model);
-    }
+    var model = new DashboardViewModel
+    {
+        LowStockItems = lowStockItems.Select(x => new LowStockItemViewModel
+        {
+            Code = x.ItemCode,
+            ColorName = x.ColorName,
+            Qty = x.Qty
+        }).ToList(),
+        TodaySales = 145,        
+        ThisMonthRevenue = 3264,
+        ThisYearCustomers = 1244
+    };
+
+    return View(model);
+}
+
     public IActionResult Login()
     {
         return View();
@@ -67,16 +91,28 @@ public class MainController : Controller
         ViewBag.RejectedCount = rejectedCount;
         ViewBag.Recent = recent;
 
+        var allColorItems = await _context.ColorItem
+            .Include(ci => ci.Color)
+            .Include(ci => ci.Item)
+            .AsNoTracking()
+            .ToListAsync();
 
-        var allItems = await _itemRepo.GetAllAsync();
-        var lowStockItems = allItems.Where(i => i.Qty <= 5).ToList();
+        var lowStockItems = allColorItems
+            .Where(ci => ci.Quantity <= 5)
+            .Select(ci => new LowStockItemViewModel
+            {
+                Code = ci.Item.Code,
+                ColorName = ci.Color.Name,
+                Qty = ci.Quantity
+            })
+            .ToList();
 
         var model = new DashboardViewModel
         {
             LowStockItems = lowStockItems,
-            TodaySales = 145,        // Example: replace with real logic
-            ThisMonthRevenue = 3264, // Example: replace with real logic
-            ThisYearCustomers = 1244 // Example: replace with real logic
+            TodaySales = 145,
+            ThisMonthRevenue = 3264,
+            ThisYearCustomers = 1244
         };
 
         return View(model);

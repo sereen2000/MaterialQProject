@@ -1,4 +1,4 @@
-﻿using MaterialQ.Data.Repositories.Implementations;
+﻿using MaterialQ.Data.Repositories.Interfaces;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Services.Interfaces;
 

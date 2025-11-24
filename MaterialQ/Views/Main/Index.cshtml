@@ -17,18 +17,29 @@
             </ol>
         </nav>
     </div><!-- End Page Title -->
+
 @if (Model.LowStockItems.Any())
 {
-    <div class="alert alert-warning">
-        <h5>Low Stock Alert!</h5>
-        <ul>
-            @foreach (var item in Model.LowStockItems)
-            {
-                <li>@item.Code- @item.Color.Name - Quantity: <span style="color:red">@item.Qty</span></li>
-            }
-        </ul>
+    <div class="row mb-4">
+        @foreach (var item in Model.LowStockItems)
+        {
+            <div class="col-md-4">
+                <div class="card text-white bg-danger mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 2rem;"></i>
+                            <div>
+                                <h6 class="card-title mb-1">@item.Code - @item.ColorName</h6>
+                                <p class="card-text mb-0">Quantity: <strong>@item.Qty</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 }
+
 
     <section class="section dashboard">
         <div class="row">

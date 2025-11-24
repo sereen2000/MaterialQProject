@@ -1,12 +1,10 @@
 ﻿using MaterialQ.Data;
-using MaterialQ.Data.Repositories.Implementations;
+using MaterialQ.Data.Repositories.Interfaces;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
-using Microsoft.CodeAnalysis.Elfie.Model.Map;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Text.Json;
 
 namespace MaterialQ.Services.Implementations;
@@ -22,68 +20,60 @@ public class ItemService : IItemService
         _context = context;
     }
 
-
+    // ----------------- Get all items for Index -----------------
     public async Task<IEnumerable<RetrieveItemViewModel>> GetAllItemsIndexAsync()
     {
         var items = await _context.Items
-        .AsNoTracking()
-        .Include(i => i.Color)
-        .Include(i => i.Unit)
-        .ToListAsync();
+            .Include(i => i.Unit)
+            .Include(i => i.ColorItems)
+                .ThenInclude(ci => ci.Color)
+            .AsNoTracking()
+            .ToListAsync();
 
-        var result = items
-       .GroupBy(i => i.Code)
-       .Select(g => new RetrieveItemViewModel
-       {
-           Id = g.First().Id,
-           Code = g.Key,
-           Description = g.First().Description,
-           Price = g.First().Price,
-           Vat = g.First().Vat,
-           UnitName = g.First().Unit.Name,
-
-           // 👇 Total quantity for all colors of this item
-           TotalQty = g.Sum(i => i.Qty),
-
-           // 👇 List of colors with individual quantities
-           Colors = g.Select(i => new ItemColor
-           {
-               ColorId = i.ColorId,
-               ColorName = i.Color?.Name,
-               Quantity = i.Qty
-           }).ToList()
-       })
-       .ToList();
-
-        return result;
+        return items.Select(i => new RetrieveItemViewModel
+        {
+            Id = i.Id,
+            Code = i.Code,
+            Description = i.Description,
+            Price = i.Price,
+            Vat = i.Vat,
+            UnitName = i.Unit?.Name,
+            TotalQty = i.ColorItems.Sum(ci => ci.Quantity),
+            Colors = i.ColorItems.Select(ci => new ItemColor
+            {
+                ColorId = ci.ColorId,
+                ColorName = ci.Color?.Name,
+                Quantity = ci.Quantity
+            }).ToList()
+        });
     }
 
-
+    // ----------------- Get single item -----------------
     public async Task<ItemsModel?> GetByIdAsync(int id)
     {
         return await _itemRepo.GetByIdAsync(id);
     }
 
+    // ----------------- Get item with colors for edit -----------------
     public async Task<ItemsModel?> GetItemforUpdateByIdAsync(int id)
     {
-        var itemMain = await _context.Items
+        return await _context.Items
             .Include(i => i.Unit)
-            .Include(i => i.Color)
+            .Include(i => i.ColorItems)
+                .ThenInclude(ci => ci.Color)
             .FirstOrDefaultAsync(i => i.Id == id);
-
-         return itemMain;
-
     }
 
-    public async Task<List<ItemsModel?>> GetColorforUpdateByIdAsync(int id)
+    // ----------------- Get ColorItems for item -----------------
+    public async Task<List<ColorItemModel>> GetColorforUpdateByIdAsync(int id)
     {
-        var Colors = await _context.Items
-            .Where(i => i.ColorId == id)
-            .Include(i => i.Color)
+        return await _context.ColorItem
+            .Where(ci => ci.ItemId == id)
+            .Include(ci => ci.Color)
             .ToListAsync();
-        return Colors;
     }
-    
+
+    // ----------------- Add single item -----------------
     public async Task AddAsync(ItemsModel item)
     {
         await _itemRepo.AddAsync(item);
@@ -96,139 +86,175 @@ public class ItemService : IItemService
         await _itemRepo.SaveAsync();
     }
 
+    // ----------------- Update single item -----------------
     public async Task UpdateAsync(ItemsModel item)
     {
         await _itemRepo.UpdateAsync(item);
         await _itemRepo.SaveAsync();
     }
 
+    // ----------------- Delete item + its ColorItems -----------------
     public async Task DeleteAsync(int id)
     {
-        var item = await _itemRepo.GetByIdAsync(id);
+        var item = await _context.Items
+            .Include(i => i.ColorItems)
+            .FirstOrDefaultAsync(i => i.Id == id);
+
         if (item != null)
         {
-            await _itemRepo.DeleteAsync(item);
-            await _itemRepo.SaveAsync();
+            if (item.ColorItems.Any())
+            {
+                _context.ColorItem.RemoveRange(item.ColorItems);
+            }
+
+            _context.Items.Remove(item);
+            await _context.SaveChangesAsync();
         }
     }
+
+    // ----------------- Add item with colors from form -----------------
     public async Task AddItemWithColorsAsync(IFormCollection form)
     {
-        var colorsList = JsonSerializer.Deserialize<List<ItemColor>>(form["ColorsJson"]);
+        var colorsList = JsonSerializer.Deserialize<List<ItemColor>>(form["ColorsJson"]) ?? new List<ItemColor>();
 
-        // Upload image once
-        string imagePath = null;
+        // Upload image
+        string? imagePath = null;
         var imageFile = form.Files["ImageFile"];
         if (imageFile != null && imageFile.Length > 0)
         {
-            var fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
-            var ext = Path.GetExtension(imageFile.FileName);
-            fileName = $"{fileName}_{Guid.NewGuid()}{ext}";
-
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/items");
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items");
+            Directory.CreateDirectory(folderPath);
             var filePath = Path.Combine(folderPath, fileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(stream);
-            }
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await imageFile.CopyToAsync(stream);
             imagePath = "/images/items/" + fileName;
         }
 
-        // Create items for each color
+        // Create item
+        var item = new ItemsModel
+        {
+            Code = form["ItemCode"],
+            Description = form["Description"],
+            Price = float.TryParse(form["Price"], out var p) ? p : 0,
+            Vat = float.TryParse(form["VAT"], out var v) ? v : 0,
+            UnitId = int.TryParse(form["Unit"], out var u) ? u : 0,
+            Image = imagePath
+        };
+
+        await _itemRepo.AddAsync(item);
+        await _itemRepo.SaveAsync();
+
+        // Add ColorItems
         foreach (var c in colorsList)
         {
             int colorId = c.ColorId ?? 0;
-            if (colorId == 0 && !string.IsNullOrEmpty(c.ColorName))
+            if (colorId == 0 && !string.IsNullOrWhiteSpace(c.ColorName))
             {
                 var newColor = new ColorsModel { Name = c.ColorName };
-                await _context.Colors.AddAsync(newColor);
-                await _context.SaveChangesAsync(); // get new ID
-                colorId = newColor.Id;
-            }
-
-            var item = new ItemsModel
-            {
-                Code = form["ItemCode"],
-                Description = form["Description"],
-                Price = float.Parse(form["Price"]),
-                UnitId = int.Parse(form["Unit"]),
-                Vat = float.Parse(form["VAT"]),
-                ColorId = colorId,
-                Qty = c.Quantity,
-                Image = imagePath
-            };
-
-            await _context.Items.AddAsync(item);
-        }
-
-        await _context.SaveChangesAsync(); // save all at once
-    }
-
-    public async Task UpdateItemWithColorsAsync(UpdateItemViewModel model)
-    {
-        var itemFromDb = await _context.Items.FirstOrDefaultAsync(i => i.Id == model.Id);
-        if (itemFromDb == null) return;
-
-        // 1. Handle image
-        string imagePath = itemFromDb.Image;
-        if (model.ImageFile != null && model.ImageFile.Length > 0)
-        {
-            var fileName = $"{Path.GetFileNameWithoutExtension(model.ImageFile.FileName)}_{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}";
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/items");
-            Directory.CreateDirectory(folderPath);
-            var filePath = Path.Combine(folderPath, fileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await model.ImageFile.CopyToAsync(stream);
-            }
-            imagePath = "/images/items/" + fileName;
-        }
-
-        // 2. Delete old color variants for this item code
-        var oldItems = _context.Items.Where(i => i.Code == itemFromDb.Code).ToList();
-        _context.Items.RemoveRange(oldItems);
-        await _context.SaveChangesAsync();
-
-        // 3. Recreate items for each color
-        foreach (var color in model.Colors)
-        {
-            int colorId = color.ColorId ?? 0;
-
-            // Add new color if needed
-            if (colorId == 0 && !string.IsNullOrEmpty(color.ColorName))
-            {
-                var newColor = new ColorsModel { Name = color.ColorName };
                 await _context.Colors.AddAsync(newColor);
                 await _context.SaveChangesAsync();
                 colorId = newColor.Id;
             }
 
-            var newItem = new ItemsModel
+            var ci = new ColorItemModel
             {
-                Code = model.Code,
-                Description = model.Description,
-                Price = (float)model.Price,
-                Vat = model.Vat,
-                UnitId = model.UnitId,
+                ItemId = item.Id,
                 ColorId = colorId,
-                Qty = color.Quantity,
-                Image = imagePath
+                Quantity = c.Quantity
             };
-
-            await _context.Items.AddAsync(newItem);
-            await _context.SaveChangesAsync();
+            await _context.ColorItem.AddAsync(ci);
         }
+
+        // Update item quantity
+        item.Qty = await _context.ColorItem
+            .Where(ci => ci.ItemId == item.Id)
+            .SumAsync(ci => ci.Quantity);
+
+        await _itemRepo.UpdateAsync(item);
+        await _itemRepo.SaveAsync();
     }
 
+    // ----------------- Update item with colors -----------------
+    public async Task UpdateItemWithColorsAsync(UpdateItemViewModel model)
+    {
+        var item = await _context.Items
+            .Include(i => i.ColorItems)
+            .FirstOrDefaultAsync(i => i.Id == model.Id);
+
+        if (item == null) return;
+
+        // Handle image
+        if (model.ImageFile != null && model.ImageFile.Length > 0)
+        {
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}";
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "items");
+            Directory.CreateDirectory(folderPath);
+            var filePath = Path.Combine(folderPath, fileName);
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await model.ImageFile.CopyToAsync(stream);
+            item.Image = "/images/items/" + fileName;
+        }
+
+        // Update basic item fields
+        item.Code = model.Code;
+        item.Description = model.Description;
+        item.Price = (float)model.Price;
+        item.Vat = model.Vat;
+        item.UnitId = model.UnitId;
+
+        item.ColorItems ??= new List<ColorItemModel>();
+
+        // Update or add ColorItems
+        foreach (var colorVm in model.Colors)
+        {
+            int colorId = colorVm.ColorId ?? 0;
+            if (colorId == 0 && !string.IsNullOrWhiteSpace(colorVm.ColorName))
+            {
+                var newColor = new ColorsModel { Name = colorVm.ColorName };
+                await _context.Colors.AddAsync(newColor);
+                await _context.SaveChangesAsync();
+                colorId = newColor.Id;
+            }
+
+            var existingCi = item.ColorItems.FirstOrDefault(ci => ci.ColorId == colorId && ci.ItemId == item.Id);
+            if (existingCi != null)
+            {
+                existingCi.Quantity = colorVm.Quantity;
+                _context.ColorItem.Update(existingCi);
+            }
+            else
+            {
+                var newCi = new ColorItemModel
+                {
+                    ItemId = item.Id,
+                    ColorId = colorId,
+                    Quantity = colorVm.Quantity
+                };
+                await _context.ColorItem.AddAsync(newCi);
+                item.ColorItems.Add(newCi);
+            }
+        }
+
+        // Recalculate total quantity
+        item.Qty = await _context.ColorItem
+            .Where(ci => ci.ItemId == item.Id)
+            .SumAsync(ci => ci.Quantity);
+
+        _context.Items.Update(item);
+        await _context.SaveChangesAsync();
+    }
+
+    // ----------------- Get all items raw -----------------
     public async Task<IEnumerable<ItemsModel>> GetAllAsync()
     {
         var items = await _context.Items
-                 .AsNoTracking()
-                 .Include(i => i.Color)
-                 .Include(i => i.Unit)
-                 .ToListAsync();
+            .AsNoTracking()
+            .Include(i => i.Unit)
+            .Include(i => i.ColorItems)
+                .ThenInclude(ci => ci.Color)
+            .ToListAsync();
+
         return items;
     }
 }

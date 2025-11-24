@@ -1,4 +1,6 @@
-﻿namespace MaterialQ.Models.ViewModels;
+﻿using MaterialQ.Models.DataModels;
+
+namespace MaterialQ.Models.ViewModels;
 
 public class ItemColor
 {
