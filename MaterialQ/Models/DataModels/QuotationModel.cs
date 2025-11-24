@@ -1,42 +1,42 @@
-﻿using System;
-using System.Collections.Generic; 
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MaterialQ.Models.DataModels
-{
-    public class QuotationModel
-        {
-            [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+namespace MaterialQ.Models.DataModels;
 
-            [Required]
-            [StringLength(100)]
-            public string QuotationNumber { get; set; }  
+public class QuotationModel
+    {
+        [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
-            [Required]
-            [StringLength(200)]
-            public string CustomerName { get; set; }      
+        [Required]
+        [StringLength(100)]
+        public string QuotationNumber { get; set; }  
 
-            [Required]
-            public DateTime DateCreated { get; set; } = DateTime.Now; 
+        [Required]
+        [StringLength(200)]
+        public string CustomerName { get; set; }      
 
-            [StringLength(200)]
-            public string CreatedBy { get; set; }        
+        [Required]
+        public DateTime DateCreated { get; set; } = DateTime.Now; 
 
-            public decimal TotalAmount { get; set; }      
+        [StringLength(200)]
+        public string CreatedBy { get; set; }        
 
-            public decimal Discount { get; set; }         
 
-            public decimal NetAmount { get; set; }        
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Discount { get; set; }
 
-            [StringLength(50)]
-            public string Status { get; set; }
-        public List<QuotationItemsModel> Items { get; set; } = new();
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal NetAmount { get; set; }
 
-    }
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal TotalAmount { get; set; }
 
+
+    [StringLength(50)]
+        public string Status { get; set; }
+    public List<QuotationItemsModel> Items { get; set; } = new();
 
 }
 
