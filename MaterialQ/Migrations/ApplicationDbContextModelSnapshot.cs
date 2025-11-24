@@ -22,6 +22,32 @@ namespace MaterialQ.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MaterialQ.Models.DataModels.ColorItemModel", b =>
+                {
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ColorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ItemsModelId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("Quantity")
+                        .HasColumnType("real");
+
+                    b.HasKey("ItemId", "ColorId");
+
+                    b.HasIndex("ColorId");
+
+                    b.HasIndex("ItemsModelId");
+
+                    b.ToTable("ColorItem");
+                });
+
             modelBuilder.Entity("MaterialQ.Models.DataModels.ColorsModel", b =>
                 {
                     b.Property<int>("Id")
@@ -51,9 +77,6 @@ namespace MaterialQ.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ColorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -75,11 +98,46 @@ namespace MaterialQ.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ColorId");
-
                     b.HasIndex("UnitId");
 
                     b.ToTable("Items", (string)null);
+                });
+
+            modelBuilder.Entity("MaterialQ.Models.DataModels.QuotationItemsModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ItemDescription")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuotationId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Vat")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("QuotationId");
+
+                    b.ToTable("QuotationItems", (string)null);
                 });
 
             modelBuilder.Entity("MaterialQ.Models.DataModels.QuotationModel", b =>
@@ -346,44 +404,7 @@ namespace MaterialQ.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("QuotationItemsModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ItemDescription")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuotationId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Vat")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("QuotationId");
-
-                    b.ToTable("QuotationItems", (string)null);
-                });
-
-            modelBuilder.Entity("MaterialQ.Models.DataModels.ItemsModel", b =>
+            modelBuilder.Entity("MaterialQ.Models.DataModels.ColorItemModel", b =>
                 {
                     b.HasOne("MaterialQ.Models.DataModels.ColorsModel", "Color")
                         .WithMany()
@@ -391,15 +412,47 @@ namespace MaterialQ.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MaterialQ.Models.DataModels.ItemsModel", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MaterialQ.Models.DataModels.ItemsModel", null)
+                        .WithMany("ColorItems")
+                        .HasForeignKey("ItemsModelId");
+
+                    b.Navigation("Color");
+
+                    b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("MaterialQ.Models.DataModels.ItemsModel", b =>
+                {
                     b.HasOne("MaterialQ.Models.DataModels.UnitModel", "Unit")
                         .WithMany()
                         .HasForeignKey("UnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Color");
-
                     b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("MaterialQ.Models.DataModels.QuotationItemsModel", b =>
+                {
+                    b.HasOne("MaterialQ.Models.DataModels.ItemsModel", null)
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MaterialQ.Models.DataModels.QuotationModel", "Quotation")
+                        .WithMany("Items")
+                        .HasForeignKey("QuotationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quotation");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -453,21 +506,9 @@ namespace MaterialQ.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("QuotationItemsModel", b =>
+            modelBuilder.Entity("MaterialQ.Models.DataModels.ItemsModel", b =>
                 {
-                    b.HasOne("MaterialQ.Models.DataModels.ItemsModel", null)
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MaterialQ.Models.DataModels.QuotationModel", "Quotation")
-                        .WithMany("Items")
-                        .HasForeignKey("QuotationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Quotation");
+                    b.Navigation("ColorItems");
                 });
 
             modelBuilder.Entity("MaterialQ.Models.DataModels.QuotationModel", b =>

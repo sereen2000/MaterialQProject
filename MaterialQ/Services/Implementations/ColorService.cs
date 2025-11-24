@@ -1,5 +1,5 @@
 ﻿using MaterialQ.Data;
-using MaterialQ.Data.Repositories.Implementations;
+using MaterialQ.Data.Repositories.Interfaces;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
@@ -11,13 +11,13 @@ public class ColorService : IColorService
 {
     private readonly IGenericRepository<ColorsModel> _colorRepository;
     private readonly ApplicationDbContext _context;
-    private readonly IGenericRepository<ItemsModel> _itemRepository;
+    private readonly IGenericRepository<ColorItemModel> _itemColorRepository;
 
-    public ColorService(IGenericRepository<ColorsModel> colorRepo,ApplicationDbContext context, IGenericRepository<ItemsModel> itemRepository)
+    public ColorService(IGenericRepository<ColorsModel> colorRepo,ApplicationDbContext context, IGenericRepository<ColorItemModel> itemColorRepository)
     {
         _colorRepository = colorRepo;
         _context = context;
-        _itemRepository = itemRepository;
+        _itemColorRepository = itemColorRepository;
     }
 
     public async Task<IEnumerable<ColorsModel>> GetAllAsync() => await _colorRepository.GetAllAsync();
@@ -53,7 +53,7 @@ public class ColorService : IColorService
 
     public async ValueTask<List<ItemColor>> GetColorsrelatedtToItem(int itemId)
     {
-        var items = (await _itemRepository.GetAllAsync())
+        var items = (await _itemColorRepository.GetAllAsync())
                 .Where(i => i.Id == itemId)
                 .ToList();
 
@@ -61,7 +61,7 @@ public class ColorService : IColorService
         {
             ColorId = i.ColorId,
             ColorName = (await _colorRepository.GetByIdAsync(i.ColorId)).Name,
-            Quantity = i.Qty
+            Quantity = i.Quantity
         }));
 
         return itemColors.ToList();

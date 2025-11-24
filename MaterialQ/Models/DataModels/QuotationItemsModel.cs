@@ -1,6 +1,7 @@
-﻿using MaterialQ.Models.DataModels;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MaterialQ.Models.DataModels;
 
 public class QuotationItemsModel
 {
@@ -19,14 +20,18 @@ public class QuotationItemsModel
     public int Quantity { get; set; }
 
     [Required]
+    [Column(TypeName = "decimal(18,2)")]
     public decimal UnitPrice { get; set; }
 
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Vat { get; set; }
+
 
     public decimal Total => (Quantity * UnitPrice) + Vat;
 
-    [ForeignKey("Quotation")]
     public int QuotationId { get; set; }
+
+    [ForeignKey("QuotationId")]
 
     public QuotationModel Quotation { get; set; }
 
