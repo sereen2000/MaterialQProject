@@ -1,67 +1,188 @@
 ﻿@model MaterialQ.Models.DataModels.QuotationModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Quotation";
     Layout = "~/Views/Shared/LayoutMain.cshtml";
 }
 
-<h1>Edit</h1>
+<div class="container mt-5">
 
-<h4>QuotationModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="QuotationNumber" class="control-label"></label>
-                <input asp-for="QuotationNumber" class="form-control" />
-                <span asp-validation-for="QuotationNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CustomerName" class="control-label"></label>
-                <input asp-for="CustomerName" class="form-control" />
-                <span asp-validation-for="CustomerName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" />
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Discount" class="control-label"></label>
-                <input asp-for="Discount" class="form-control" />
-                <span asp-validation-for="Discount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NetAmount" class="control-label"></label>
-                <input asp-for="NetAmount" class="form-control" />
-                <span asp-validation-for="NetAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-pencil-square me-2"></i> Edit Quotation</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
     </div>
+
+    <!-- Quotation Info -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Quotation Information</h5>
+
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label fw-bold">Customer Name</label>
+                <div class="col-sm-9">
+                    <input type="text" id="customerName" class="form-control"
+                           value="@Model.CustomerName" required />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label fw-bold">Discount (%)</label>
+                <div class="col-sm-9">
+                    <input type="number" id="discount" class="form-control"
+                           value="@Model.Discount" min="0" max="100" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Items -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="mb-3">Quotation Items</h5>
+
+            @if (Model.Items != null && Model.Items.Any())
+            {
+                <table class="table table-hover align-middle" id="itemsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Description</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>VAT</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr data-id="@item.ItemId">
+
+                                <td>@item.ItemId</td>
+
+                                <!-- Description: READ ONLY -->
+                                <td>
+                                    <input type="text" class="form-control desc"
+                                           value="@item.ItemDescription" readonly />
+                                </td>
+
+                                <!-- Quantity: EDITABLE -->
+                                <td>
+                                    <input type="number" class="form-control qty"
+                                           value="@item.Quantity" min="1" />
+                                </td>
+
+                                <!-- Unit Price: READ ONLY -->
+                                <td>
+                                    <input type="number" class="form-control price"
+                                           value="@item.UnitPrice" step="0.01" readonly />
+                                </td>
+
+                                <!-- VAT: READ ONLY -->
+                                <td>
+                                    <input type="number" class="form-control vat"
+                                           value="@item.Vat" step="0.01" readonly />
+                                </td>
+
+                                <td class="total-cell fw-bold"></td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-muted text-center py-3">No items found for this quotation.</p>
+            }
+
+            <div class="d-flex justify-content-end mt-3">
+                <div class="text-end">
+                    <h6>Subtotal: <span id="subtotal" class="fw-bold text-primary"></span> JOD</h6>
+                    <h6>Discount: <span id="discountVal" class="fw-bold"></span> JOD</h6>
+                    <h5 class="text-success">Net Amount: <span id="netAmount" class="fw-bold"></span> JOD</h5>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <button class="btn btn-success px-4" onclick="saveChanges(@Model.Id)">
+            <i class="bi bi-check-circle"></i> Save Changes
+        </button>
+    </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    <script>
 
+        function recalcTotals() {
+            let subtotal = 0;
+
+            document.querySelectorAll("#itemsTable tbody tr").forEach(row => {
+                const qty = parseFloat(row.querySelector(".qty").value) || 0;
+                const price = parseFloat(row.querySelector(".price").value) || 0;
+                const vat = parseFloat(row.querySelector(".vat").value) || 0;
+
+                const total = (qty * price) + vat;
+                row.querySelector(".total-cell").innerText = total.toFixed(2);
+
+                subtotal += total;
+            });
+
+            document.getElementById("subtotal").innerText = subtotal.toFixed(2);
+
+            const discount = parseFloat(document.getElementById("discount").value) || 0;
+            const discountAmount = subtotal * (discount / 100);
+
+            document.getElementById("discountVal").innerText = discountAmount.toFixed(2);
+            document.getElementById("netAmount").innerText = (subtotal - discountAmount).toFixed(2);
+        }
+
+        document.addEventListener("input", recalcTotals);
+        document.addEventListener("DOMContentLoaded", recalcTotals);
+
+             async function saveChanges(id) {
+
+            let items = [];
+
+            document.querySelectorAll("#itemsTable tbody tr").forEach(row => {
+                items.push({
+                    ItemId: row.dataset.id,
+                    ItemDescription: row.querySelector(".desc").value,
+                    Quantity: parseInt(row.querySelector(".qty").value),
+                    UnitPrice: parseFloat(row.querySelector(".price").value),
+                    Vat: parseFloat(row.querySelector(".vat").value)
+                });
+            });
+
+            const quotation = {
+                Id: id,
+                CustomerName: document.getElementById("customerName").value,
+                Discount: parseFloat(document.getElementById("discount").value),
+                TotalAmount: parseFloat(document.getElementById("subtotal").innerText),
+                NetAmount: parseFloat(document.getElementById("netAmount").innerText),
+                Items: items
+            };
+
+            const res = await fetch('/Quotations/UpdateQuotation', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(quotation)
+            });
+
+            const data = await res.json();
+
+            if (data.success)
+                window.location.href = "/Quotations/Index";
+            else
+                alert(data.message ?? "Error while saving");
+        }
+
+    </script>
+}

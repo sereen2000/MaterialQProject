@@ -9,9 +9,9 @@ public class QuotationModel
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string QuotationNumber { get; set; }  
+            [Required(ErrorMessage = "Company name is required")]
+            [StringLength(200)]
+            public string CustomerName { get; set; }      
 
         [Required]
         [StringLength(200)]
