@@ -26,13 +26,11 @@ public class MainController : Controller
 
    public async Task<IActionResult> Index()
 {
-    // جلب كل العناصر مع الألوان
     var allItems = await _context.Items
         .Include(i => i.ColorItems)
             .ThenInclude(ci => ci.Color)
         .ToListAsync();
 
-    // فلترة العناصر منخفضة المخزون بناءً على مجموع الكميات لكل لون
     var lowStockItems = allItems
         .SelectMany(i => i.ColorItems.Select(ci => new
         {

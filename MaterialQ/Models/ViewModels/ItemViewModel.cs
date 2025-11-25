@@ -43,7 +43,7 @@ public class RetrieveItemViewModel
     public float Vat { get; set; }
     public int UnitId { get; set; }
     public string UnitName { get; set; }
-    public IFormFile ImageFile { get; set; }
+    public string ImageFile { get; set; }
     public float TotalQty { get; set; }  
     public List<ItemColor> Colors { get; set; } = new List<ItemColor>();
 }
