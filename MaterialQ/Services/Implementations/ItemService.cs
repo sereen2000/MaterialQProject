@@ -3,7 +3,6 @@ using MaterialQ.Data.Repositories.Interfaces;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -148,6 +147,17 @@ public class ItemService : IItemService
             imagePath = "/images/items/" + fileName;
         }
 
+        // UnitId logic
+        int unitId = int.TryParse(form["Unit"], out var u) ? u : 0;
+
+        if (unitId == 0 && !string.IsNullOrWhiteSpace(form["NewUnitName"]))
+        {
+            var newUnit = new UnitModel { Name = form["NewUnitName"] };
+            await _context.Units.AddAsync(newUnit);
+            await _context.SaveChangesAsync();
+            unitId = newUnit.Id;
+        }
+
         // Create item
         var item = new ItemsModel
         {
@@ -155,7 +165,7 @@ public class ItemService : IItemService
             Description = form["Description"],
             Price = float.TryParse(form["Price"], out var p) ? p : 0,
             Vat = float.TryParse(form["VAT"], out var v) ? v : 0,
-            UnitId = int.TryParse(form["Unit"], out var u) ? u : 0,
+            UnitId = unitId,
             Image = imagePath
         };
 

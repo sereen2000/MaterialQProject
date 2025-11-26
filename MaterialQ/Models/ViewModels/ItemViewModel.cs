@@ -51,6 +51,7 @@ public class RetrieveItemViewModel
 
 public class DeleteItemViewModel
 {
+    public int Id { get; set; }
     public string Code { get; set; }
     public string Description { get; set; }
     public List<ItemColor> Colors { get; set; } = new List<ItemColor>();

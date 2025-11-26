@@ -6,11 +6,10 @@
 
 }
 <div class="pagetitle">
-    <h1>Data Tables</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a asp-controller="Unit" asp-action="Index">Units</a></li>
-            <li class="breadcrumb-item active">Data</li>
+            <li class="breadcrumb-item active">Data Table</li>
         </ol>
     </nav>
 </div><!-- End Page Title -->
@@ -21,11 +20,13 @@
 
             <div class="card">
                 <div class="card-body">
-                        <h5 class="card-title mb-0">Items Data Tables</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
 
-                        <button class="btn btn-primary mb-3" id="addUnitBtn"> 
+                        <h5 class="card-title mb-0">Units Data Tables</h5>
+
+                        <a class="btn btn-primary mb-3" id="addUnitBtn">
                             <i class="ri-add-circle-fill"></i>Add Unit
-                        </button>
+                        </a>
                     </div>
 
                     <table class="table datatable align-middle">

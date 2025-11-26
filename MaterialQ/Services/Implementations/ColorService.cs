@@ -3,6 +3,7 @@ using MaterialQ.Data.Repositories.Interfaces;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace MaterialQ.Services.Implementations;
 
@@ -47,8 +48,18 @@ public class ColorService : IColorService
     {
         var entity = await _colorRepository.GetByIdAsync(id);
         if (entity != null)
-            await _colorRepository.DeleteAsync(entity);
-            await _colorRepository.SaveAsync();
+        {
+            bool hasLinkedItems = await _context.ColorItem.AnyAsync(x => x.ColorId == id);
+            if (!hasLinkedItems) 
+            {
+                await _colorRepository.DeleteAsync(entity);
+                await _colorRepository.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot delete this color because it is linked to items.");
+            }
+        }
     }
 
     public async ValueTask<List<ItemColor>> GetColorsrelatedtToItem(int itemId)

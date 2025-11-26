@@ -1,4 +1,5 @@
-﻿using MaterialQ.Data.Repositories.Interfaces;
+﻿using MaterialQ.Data;
+using MaterialQ.Data.Repositories.Interfaces;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Services.Interfaces;
 
@@ -7,10 +8,13 @@ namespace MaterialQ.Services.Implementations;
 public class UnitService : IUnitService
 {
     private readonly IGenericRepository<UnitModel> _unitRepo;
+    private readonly ApplicationDbContext _context;
 
-    public UnitService(IGenericRepository<UnitModel> unitRepo)
+
+    public UnitService(IGenericRepository<UnitModel> unitRepo,ApplicationDbContext context)
     {
         _unitRepo = unitRepo;
+        _context = context;
     }
 
     public async Task<IEnumerable<UnitModel>> GetAllAsync()
@@ -40,8 +44,17 @@ public class UnitService : IUnitService
         var unit = await _unitRepo.GetByIdAsync(id);
         if (unit != null)
         {
-            await _unitRepo.DeleteAsync(unit);
-            await _unitRepo.SaveAsync();
+            var item= await _context.Items.FindAsync(id);
+            if (item == null) 
+            {
+                await _unitRepo.DeleteAsync(unit);
+                await _unitRepo.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException("Cannot delete this unit because it is linked to items.");
+            }
+
         }
     }
 
