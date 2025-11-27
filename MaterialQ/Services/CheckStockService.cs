@@ -1,4 +1,4 @@
-﻿using MaterialQ.Data.Repositories.Interfaces;
+﻿using MaterialQ.Data.Repositories;
 using MaterialQ.Models.DataModels;
 
 public class CheckStockService : BackgroundService

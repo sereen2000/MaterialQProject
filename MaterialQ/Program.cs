@@ -1,6 +1,5 @@
 using MaterialQ.Data;
-using MaterialQ.Data.Repositories.Implementations;
-using MaterialQ.Data.Repositories.Interfaces;
+using MaterialQ.Data.Repositories;
 using MaterialQ.Services.Implementations;
 using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
