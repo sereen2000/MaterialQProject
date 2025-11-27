@@ -7,39 +7,42 @@
     Layout = "~/Views/Shared/LayoutMain.cshtml";
 }
 
-    
-    <div class="pagetitle">
-        <h1>Dashboard</h1>
-        <nav>
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                <li class="breadcrumb-item active">Dashboard</li>
-            </ol>
-        </nav>
-    </div><!-- End Page Title -->
-
+<div class="pagetitle mb-4">
+    <h1>Quotation Dashboard</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+    </nav>
+</div>
 @if (Model.LowStockItems.Any())
 {
-    <div class="row mb-4">
-        @foreach (var item in Model.LowStockItems)
-        {
-            <div class="col-md-4">
-                <div class="card text-white bg-danger mb-3">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 2rem;"></i>
-                            <div>
-                                <h6 class="card-title mb-1">@item.Code - @item.ColorName</h6>
-                                <p class="card-text mb-0">Quantity: <strong>@item.Qty</strong></p>
-                            </div>
-                        </div>
+    <div class="alert alert-warning shadow-sm border-warning" style="border-left:5px solid #ff9900;">
+        <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-exclamation-triangle-fill" style="font-size:1.4rem; color:#cc6600;"></i>
+            <h5 class="ms-2 mb-0" style="color:#cc6600;">Low Stock Alert</h5>
+        </div>
+
+        <p class="mb-2">Some items are running low on stock:</p>
+
+        <ul class="list-group">
+            @foreach (var item in Model.LowStockItems)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>@item.Code</strong>
+                        <span class="text-muted">| @item.ColorName</span>
                     </div>
-                </div>
-            </div>
-        }
+
+                    <span class="badge bg-danger rounded-pill">
+                        @item.Qty left
+                    </span>
+                </li>
+            }
+        </ul>
     </div>
 }
-
 
     <section class="section dashboard">
         <div class="row">

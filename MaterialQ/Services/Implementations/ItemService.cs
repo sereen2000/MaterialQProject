@@ -3,7 +3,6 @@ using MaterialQ.Data.Repositories.Interfaces;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -12,41 +11,58 @@ namespace MaterialQ.Services.Implementations;
 public class ItemService : IItemService
 {
     private readonly IGenericRepository<ItemsModel> _itemRepo;
+    private readonly IGenericRepository<ColorItemModel> _colorItemRepo;
     private readonly ApplicationDbContext _context;
 
-    public ItemService(IGenericRepository<ItemsModel> itemRepo, ApplicationDbContext context)
+    public ItemService(IGenericRepository<ItemsModel> itemRepo,IGenericRepository<ColorItemModel> colorItemRepo, ApplicationDbContext context)
     {
         _itemRepo = itemRepo;
+        _colorItemRepo = colorItemRepo;
         _context = context;
     }
 
-    // ----------------- Get all items for Index -----------------
     public async Task<IEnumerable<RetrieveItemViewModel>> GetAllItemsIndexAsync()
     {
         var items = await _context.Items
             .Include(i => i.Unit)
-            .Include(i => i.ColorItems)
-                .ThenInclude(ci => ci.Color)
             .AsNoTracking()
             .ToListAsync();
 
+        var colorItems = await _colorItemRepo.GetAllAsync();
+
+        // Preload Colors into dictionary
+        var colorsDict = await _context.Colors
+            .AsNoTracking()
+            .ToDictionaryAsync(c => c.Id, c => c.Name);
+
+        // Attach Color Items to Items
+        foreach (var item in items)
+        {
+            var colors = colorItems.Where(x => x.ItemId == item.Id);
+            item.ColorItems.AddRange(colors);
+        }
+
+        // Map to ViewModel
         return items.Select(i => new RetrieveItemViewModel
         {
             Id = i.Id,
+            ImageFile=i.Image,
             Code = i.Code,
             Description = i.Description,
             Price = i.Price,
             Vat = i.Vat,
             UnitName = i.Unit?.Name,
             TotalQty = i.ColorItems.Sum(ci => ci.Quantity),
+
             Colors = i.ColorItems.Select(ci => new ItemColor
             {
                 ColorId = ci.ColorId,
-                ColorName = ci.Color?.Name,
+                ColorName = colorsDict.ContainsKey(ci.ColorId) ? colorsDict[ci.ColorId] : "",
                 Quantity = ci.Quantity
             }).ToList()
         });
     }
+
 
     // ----------------- Get single item -----------------
     public async Task<ItemsModel?> GetByIdAsync(int id)
@@ -131,6 +147,17 @@ public class ItemService : IItemService
             imagePath = "/images/items/" + fileName;
         }
 
+        // UnitId logic
+        int unitId = int.TryParse(form["Unit"], out var u) ? u : 0;
+
+        if (unitId == 0 && !string.IsNullOrWhiteSpace(form["NewUnitName"]))
+        {
+            var newUnit = new UnitModel { Name = form["NewUnitName"] };
+            await _context.Units.AddAsync(newUnit);
+            await _context.SaveChangesAsync();
+            unitId = newUnit.Id;
+        }
+
         // Create item
         var item = new ItemsModel
         {
@@ -138,7 +165,7 @@ public class ItemService : IItemService
             Description = form["Description"],
             Price = float.TryParse(form["Price"], out var p) ? p : 0,
             Vat = float.TryParse(form["VAT"], out var v) ? v : 0,
-            UnitId = int.TryParse(form["Unit"], out var u) ? u : 0,
+            UnitId = unitId,
             Image = imagePath
         };
 
@@ -217,7 +244,7 @@ public class ItemService : IItemService
                 colorId = newColor.Id;
             }
 
-            var existingCi = item.ColorItems.FirstOrDefault(ci => ci.ColorId == colorId && ci.ItemId == item.Id);
+            var existingCi = _context.ColorItem.Where(x=>x.ColorId==colorVm.ColorId&&x.ItemId==model.Id).FirstOrDefault();
             if (existingCi != null)
             {
                 existingCi.Quantity = colorVm.Quantity;

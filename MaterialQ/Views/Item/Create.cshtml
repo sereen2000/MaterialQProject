@@ -136,6 +136,27 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Unit Modal -->
+                    <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="unitModalLabel">Add New Unit</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Unit Name</label>
+                                        <input type="text" id="newUnitInput" class="form-control" placeholder="Enter new unit name">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" id="saveUnitBtn" class="btn btn-primary">Add Unit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Submit -->
                     <div class="row mb-3">
@@ -145,6 +166,7 @@
                     </div>
 
                     <input type="hidden" name="ColorsJson" id="ColorsJson">
+                    <input type="hidden" name="NewUnitName" id="NewUnitName">
 
                 </form>
             </div>
@@ -227,13 +249,45 @@
             colorsJsonInput.value = JSON.stringify(colorsList);
         });
 
-        // Unit "Add New" alert
-        const unitSelect = document.getElementById("unitSelect");
+        // ==== UNIT MODAL FUNCTIONALITY ====
+        const unitModal = new bootstrap.Modal(document.getElementById("unitModal"));
+        const newUnitInput = document.getElementById("newUnitInput");
+        const saveUnitBtn = document.getElementById("saveUnitBtn");
+        const newUnitHidden = document.getElementById("NewUnitName");
+
+        // When "Add New" is selected — open the modal
         unitSelect.addEventListener("change", function () {
             if (this.value === "addUnit") {
-                alert("You can add your 'Add Unit' modal here.");
-                this.selectedIndex = 0;
+                newUnitInput.value = "";
+                unitModal.show();
+                this.selectedIndex = 0; // reset to "Select item unit"
             }
+        });
+
+        // Save new unit and add it to the dropdown
+        saveUnitBtn.addEventListener("click", function () {
+            const unitName = newUnitInput.value.trim();
+            if (!unitName) {
+                alert("Please enter a unit name");
+                return;
+            }
+
+            // Create new <option> with ID = 0
+            const newOption = document.createElement("option");
+            newOption.value = 0; // backend سيضيفه بعدين
+            newOption.textContent = unitName;
+
+            // Insert before "Add Unit"
+            const addUnitOption = unitSelect.querySelector("option[value='addUnit']");
+            unitSelect.insertBefore(newOption, addUnitOption);
+
+            // Select the new unit
+            unitSelect.value = 0;
+
+            // Put name in hidden input for backend
+            newUnitHidden.value = unitName;
+
+            unitModal.hide();
         });
     </script>
 }

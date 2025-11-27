@@ -169,8 +169,7 @@ namespace MaterialQ.Migrations
 
                     b.Property<string>("QuotationNumber")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()

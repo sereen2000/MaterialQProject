@@ -109,7 +109,7 @@ namespace MaterialQ.Controllers
 
         // ----------------- Delete Modal -----------------
         [HttpGet]
-        public async Task<IActionResult> DeleteItemModal(int id)
+        public async Task<IActionResult> _DeleteItemModal(int id)
         {
             var item = await _context.Items
                 .FirstOrDefaultAsync(i => i.Id == id);
@@ -122,6 +122,7 @@ namespace MaterialQ.Controllers
 
             var model = new DeleteItemViewModel
             {
+                Id= id,
                 Code = item.Code,
                 Description = item.Description,
                 Colors = colorItems.Select(ci => new ItemColor
