@@ -1,5 +1,5 @@
 ﻿using MaterialQ.Data;
-using MaterialQ.Data.Repositories.Interfaces;
+using MaterialQ.Data.Repositories;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Services.Interfaces;
 
