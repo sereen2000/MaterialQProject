@@ -47,19 +47,17 @@ public class ColorService : IColorService
     public async Task DeleteAsync(int id)
     {
         var entity = await _colorRepository.GetByIdAsync(id);
-        if (entity != null)
-        {
-            bool hasLinkedItems = await _context.ColorItem.AnyAsync(x => x.ColorId == id);
-            if (!hasLinkedItems) 
-            {
-                await _colorRepository.DeleteAsync(entity);
-                await _colorRepository.SaveAsync();
-            }
-            else
-            {
-                throw new InvalidOperationException("Cannot delete this color because it is linked to items.");
-            }
-        }
+
+        if (entity == null)
+            throw new Exception("Color not found.");
+
+        bool hasLinkedItems = await _context.ColorItem.AnyAsync(x => x.ColorId == id);
+
+        if (hasLinkedItems)
+            throw new InvalidOperationException("Cannot delete this color because it is linked to items.");
+
+        await _colorRepository.DeleteAsync(entity);
+        await _colorRepository.SaveAsync();
     }
 
     public async ValueTask<List<ItemColor>> GetColorsrelatedtToItem(int itemId)

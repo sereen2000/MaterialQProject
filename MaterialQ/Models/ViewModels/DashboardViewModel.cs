@@ -7,8 +7,8 @@ public class DashboardViewModel
     public List<LowStockItemViewModel> LowStockItems { get; set; } = new List<LowStockItemViewModel>();
 
     // You can add other dashboard metrics here if needed
-    public int TodaySales { get; set; }
-    public int ThisMonthRevenue { get; set; }
+    public decimal TodaySales { get; set; }
+    public decimal ThisMonthRevenue { get; set; }
     public int ThisYearCustomers { get; set; }
 }
 

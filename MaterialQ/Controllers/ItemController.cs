@@ -26,14 +26,14 @@ namespace MaterialQ.Controllers
             _context = context;
         }
 
-        // ----------------- Index -----------------
+     
         public async Task<IActionResult> Index()
         {
             var items = await _itemService.GetAllItemsIndexAsync();
             return View(items);
         }
 
-        // ----------------- Create -----------------
+    
         public async Task<IActionResult> Create()
         {
             ViewBag.Colors = await _colorService.GetAllAsync();
@@ -67,6 +67,7 @@ namespace MaterialQ.Controllers
                 Code = item.Code,
                 Description = item.Description,
                 Price = item.Price,
+                ActualPrice = item.ActualPrice,
                 Vat = item.Vat,
                 UnitId = item.UnitId,
                 ExistingImage = item.Image,
@@ -97,6 +98,7 @@ namespace MaterialQ.Controllers
                 Code = form["Code"],
                 Description = form["Description"],
                 Price = float.Parse(form["Price"]),
+                ActualPrice = float.Parse(form["ActualPrice"]),
                 Vat = float.Parse(form["Vat"]),
                 UnitId = int.Parse(form["UnitId"]),
                 ImageFile = form.Files["ImageFile"],
@@ -156,5 +158,22 @@ namespace MaterialQ.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        [HttpGet]
+        public async Task<IActionResult> GetColorsByItem(int itemId)
+        {
+            var colors = await _context.ColorItem
+                .Where(ci => ci.ItemId == itemId)
+                .Include(ci => ci.Color)
+                .Select(ci => new
+                {
+                    colorId = ci.ColorId,
+                    colorName = ci.Color.Name,
+                    quantity = ci.Quantity
+                })
+                .ToListAsync();
+
+            return Json(colors);
+        }
+
     }
 }

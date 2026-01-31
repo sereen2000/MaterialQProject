@@ -25,8 +25,10 @@ public class QuotationItemsModel
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal Vat { get; set; }
+    public int ColorId { get; set; }
 
 
+    public decimal Discount { get; set; }
     public decimal Total => (Quantity * UnitPrice) + Vat;
 
     public int QuotationId { get; set; }

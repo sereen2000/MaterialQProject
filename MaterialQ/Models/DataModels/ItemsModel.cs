@@ -8,6 +8,7 @@ public class ItemsModel
     public string Description { get; set; }
     public float Qty { get; set; }
     public float Price { get; set; }
+    public float ActualPrice { get; set; }
     public float Vat { get; set; }
 
     // Foreign key for Unit

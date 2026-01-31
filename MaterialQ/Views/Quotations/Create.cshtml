@@ -17,31 +17,20 @@
         </a>
     </div>
 
-    <!-- فلاتر -->
-    <form method="get" class="row g-3 mb-4">
-        <div class="col-md-4">
-            <input type="text" class="form-control" name="search" placeholder="Search items..." />
-        </div>
-        <div class="col-md-3">
-            <select class="form-select" name="category">
-                <option value="">All Categories</option>
-                <option>Electronics</option>
-                <option>Furniture</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select class="form-select" name="brand">
-                <option value="">All Brands</option>
-                <option>Brand A</option>
-                <option>Brand B</option>
-            </select>
-        </div>
-        <div class="col-md-2 d-grid">
-            <button class="btn btn-outline-primary" type="submit">
-                <i class="bi bi-search"></i> Filter
-            </button>
-        </div>
-    </form>
+   <form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" class="form-control" name="search" 
+               placeholder="Search items..."
+               value="@ViewBag.Search" />
+    </div>
+
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-outline-primary" type="submit">
+            <i class="bi bi-search"></i> Search
+        </button>
+    </div>
+</form>
+
 
     <!-- جدول العناصر -->
     <div class="card shadow-sm">
@@ -54,7 +43,8 @@
                         <th>Unit</th>
                         <th>Unit Price</th>
                         <th>Vat</th>
-                        <th style="width: 60px;"></th>
+                        <th style="width: 100px;">Color</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,12 +58,29 @@
                                 <td>@item.Unit?.Name</td>
                                 <td>@item.Price.ToString("F2")</td>
                                 <td>@item.Vat</td>
+                                <td>
+                                    <select class="form-select form-select-sm color-select">
+                                        <option value="">Select color</option>
+                                        @foreach (var c in item.ColorItems)
+                                        {
+                                            <option value="@c.ColorId"
+                                                    data-color-name="@c.Color?.Name"
+                                                    data-stock="@c.Quantity">
+                                                @c.Color?.Name (@c.Quantity)
+                                            </option>
+                                        }
+
+                                    </select>
+                                </td>
                                 <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-success" onclick="addToCart('@item.Id')">
+                                    <button type="button"
+                                            class="btn btn-sm btn-success"
+                                            onclick="addToCart('@item.Id', this)">
                                         <i class="bi bi-plus-circle"></i>
                                     </button>
                                 </td>
                             </tr>
+
                         }
                     }
                     else
@@ -91,43 +98,62 @@
 </div>
 @section Scripts {
     <script>
-              function addToCart(id) {
-            // نجيب السلة الحالية من localStorage أو نعمل واحدة جديدة
+            function addToCart(id, btn) {
+
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-           
-            const row = event.target.closest("tr");
+            const row = btn.closest("tr");
+
             const code = row.children[0].innerText.trim();
             const description = row.children[1].innerText.trim();
-
             const unit = row.children[2].innerText.trim();
-            const price = parseFloat(row.children[3].innerText.trim()) || 0; 
-            const vat = parseFloat(row.children[4].innerText.trim()) || 0;   
+            const price = parseFloat(row.children[3].innerText.trim()) || 0;
+            const vat = parseFloat(row.children[4].innerText.trim()) || 0;
 
-           
-            const existing = cart.find(i => i.id === id);
+            const colorSelect = row.querySelector(".color-select");
+            const selectedOption = colorSelect.options[colorSelect.selectedIndex];
+
+            if (!selectedOption.value) {
+                alert("⚠ Please select color first");
+                return;
+            }
+
+            const colorId = selectedOption.value;
+            const colorName = selectedOption.dataset.colorName;
+            const stock = parseInt(selectedOption.dataset.stock) || 0;
+
+            if (stock <= 0) {
+                alert("❌ This color is out of stock");
+                return;
+            }
+
+            const existing = cart.find(x => x.id === id && x.colorId === colorId);
+
             if (existing) {
-                existing.qty += 1;
+                if (existing.qty + 1 > stock) {
+                    alert("❌ Quantity exceeds available stock");
+                    return;
+                }
+                existing.qty++;
             } else {
-            cart.push({
-            id: id,
-            code: code,
-            itemDescription: description, 
-            unit: unit,
-            price: price,
-            vat: vat,
-            qty: 1
-        });
-
+                cart.push({
+                    id: id,
+                    code: code,
+                    itemDescription: description,
+                    unit: unit,
+                    price: price,
+                    vat: vat,
+                    colorId: colorId,
+                    colorName: colorName,
+                    stock: stock,
+                    qty: 1
+                });
             }
 
             localStorage.setItem("cart", JSON.stringify(cart));
-
             document.getElementById("cartCount").innerText = cart.length;
-
-            console.log("🛒 Cart Updated:", cart);
-            alert("✅ Added to cart successfully!");
         }
+
 
         document.addEventListener("DOMContentLoaded", () => {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];

@@ -18,7 +18,7 @@ public class ColorController : Controller
         var colors = await _colorService.GetAllAsync();
         return View(colors);
     }
-
+ 
     // CREATE
     [HttpGet]
     public IActionResult CreateColor()
@@ -66,9 +66,24 @@ public class ColorController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteColorConfirmed(int id)
     {
-        await _colorService.DeleteAsync(id);
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await _colorService.DeleteAsync(id);
+
+            return Json(new { success = true, message = "Color deleted successfully." });
+        }
+        catch (InvalidOperationException ex)
+        {
+           
+            return Json(new { success = false, message = ex.Message });
+        }
+        catch (Exception)
+        {
+            
+            return Json(new { success = false, message = "Unexpected error occurred." });
+        }
     }
+
 
 
 }

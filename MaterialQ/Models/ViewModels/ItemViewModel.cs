@@ -14,6 +14,7 @@ public class ItemViewModel
     public string Code { get; set; }
     public string Description { get; set; }
     public decimal Price { get; set; }
+    public decimal ActualPrice { get; set; }
     public int UnitId { get; set; }
     public float Vat { get; set; }
 
@@ -27,6 +28,7 @@ public class UpdateItemViewModel
     public string Code { get; set; }
     public string Description { get; set; }
     public float Price { get; set; }
+    public float ActualPrice { get; set; }
     public float Vat { get; set; }
     public int UnitId { get; set; }
     public IFormFile ImageFile { get; set; }
@@ -40,6 +42,7 @@ public class RetrieveItemViewModel
     public string Code { get; set; }
     public string Description { get; set; }
     public float Price { get; set; }
+    public float ActualPrice { get; set; }
     public float Vat { get; set; }
     public int UnitId { get; set; }
     public string UnitName { get; set; }

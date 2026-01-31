@@ -17,91 +17,167 @@
     <link href="~/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="~/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
     <link href="~/css/style.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('/img/Image.png') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center; /* أفقياً */
+            align-items: center; /* عمودياً */
+        }
+
+        .login-wrapper {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+            max-width: 550px;
+            width: 100%;
+        }
+
+        .logo img {
+            max-height: 50px;
+            margin-right: 8px;
+        }
+
+        .logo span {
+            font-size: 22px;
+            font-weight: 600;
+            color: #3e3e3e;
+        }
+
+        .card {
+            background-color: #ffffffcc;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+
+        card-body {
+            text-align: left;
+            display: block;
+        }
+
+        .btn-primary {
+            background-color: #b89c6b;
+            border: none;
+            font-weight: 600;
+        }
+
+            .btn-primary:hover {
+                background-color: #a38552;
+            }
+
+        a {
+            color: #b89c6b;
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+        h5.card-title {
+            color: #2e2e2e;
+            font-weight: 600;
+        }
+
+        .form-label {
+            color: #444;
+            font-weight: 500;
+            text-align: left;
+            display: block;
+        }
+
+        .form-check {
+            text-align: left;
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
 
-    <main>
-        <div class="container">
+    <div class="login-wrapper">
 
-            <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-                            @if (ViewData["ConfirmationMessage"] != null)
-                            {
-                                <div class="alert alert-success text-center" role="alert">
-                                    @ViewData["ConfirmationMessage"]
-                                </div>
-                            }
-
-                            <div class="d-flex justify-content-center py-4">
-                                <a href="/" class="logo d-flex align-items-center w-auto">
-                                    <img src="~/img/LOGO_page.png" alt="">
-                                    <span class="d-none d-lg-block">Art Of Quote</span>
-                                </a>
-                            </div>
-
-                            <div class="card mb-3">
-                                <div class="card-body">
-
-                                    <div class="pt-4 pb-2">
-                                        <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
-                                        <p class="text-center small">Enter your details to register</p>
-                                    </div>
-
-                                    <!-- ✅ Identity-compatible form -->
-                                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="row g-3 needs-validation">
-
-                                        <!-- ✅ Identity validation summary -->
-                                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
-
-                                        <div class="col-12">
-                                            <label class="form-label">Email</label>
-                                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                                            <span asp-validation-for="Input.Email" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label">Password</label>
-                                            <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
-                                            <span asp-validation-for="Input.Password" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label">Confirm Password</label>
-                                            <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
-                                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <button type="submit" class="btn btn-primary w-100">Create Account</button>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <p class="small mb-0">
-                                                Already have an account?
-                                                <a asp-area="Identity" asp-page="/Account/Login">Log in</a>
-                                            </p>
-                                        </div>
-                                    </form>
-
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-            </section>
-
+        <div class="text-center mb-4">
+            <h4 class="fw-bold">Create Account</h4>
+            <p class="text-muted mb-0">Enter your details to register</p>
         </div>
-    </main>
 
-    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/main.js"></script>
+        @if (ViewData["ConfirmationMessage"] != null)
+        {
+            <div class="alert alert-success text-center">
+                @ViewData["ConfirmationMessage"]
+            </div>
+        }
+
+        <form id="registerForm"
+              asp-route-returnUrl="@Model.ReturnUrl"
+              method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3"
+                 role="alert"></div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input asp-for="Input.Email"
+                       class="form-control"
+                       autocomplete="username" />
+                <span asp-validation-for="Input.Email"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input asp-for="Input.Password"
+                       class="form-control"
+                       autocomplete="new-password" />
+                <span asp-validation-for="Input.Password"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                <input asp-for="Input.ConfirmPassword"
+                       class="form-control"
+                       autocomplete="new-password" />
+                <span asp-validation-for="Input.ConfirmPassword"
+                      class="text-danger"></span>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary w-100 mb-3">
+                Create Account
+            </button>
+
+            <div class="text-center">
+                <span class="small">
+                    Already have an account?
+                    <a asp-area="Identity"
+                       asp-page="/Account/Login">
+                        Login
+                    </a>
+                </span>
+            </div>
+
+        </form>
+
+    </div>
+
+    <partial name="_ValidationScriptsPartial" />
 
 </body>
+
 
 </html>
 

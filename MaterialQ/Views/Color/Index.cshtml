@@ -108,6 +108,26 @@
                 modal.show();
             });
         });
+        function deleteColor(id) {
+            $.post("/Color/DeleteColorConfirmed", { id: id }, function (res) {
+                if (res.success) {
+                    
+                    $('#deleteSuccessModal').modal('show');
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+
+                } else {
+                  
+                    $('#deleteErrorModal .modal-body').text(res.message);
+                    $('#deleteErrorModal').modal('show');
+                }
+            });
+        }
+
+       
+
 
     </script>
 }

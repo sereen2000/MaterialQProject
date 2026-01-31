@@ -50,6 +50,7 @@ public class ItemService : IItemService
             Code = i.Code,
             Description = i.Description,
             Price = i.Price,
+            ActualPrice = i.ActualPrice,
             Vat = i.Vat,
             UnitName = i.Unit?.Name,
             TotalQty = i.ColorItems.Sum(ci => ci.Quantity),
@@ -163,7 +164,9 @@ public class ItemService : IItemService
         {
             Code = form["ItemCode"],
             Description = form["Description"],
+            
             Price = float.TryParse(form["Price"], out var p) ? p : 0,
+            ActualPrice = float.TryParse(form["ActualPrice"], out var ap) ? ap : 0,
             Vat = float.TryParse(form["VAT"], out var v) ? v : 0,
             UnitId = unitId,
             Image = imagePath
@@ -227,6 +230,7 @@ public class ItemService : IItemService
         item.Code = model.Code;
         item.Description = model.Description;
         item.Price = (float)model.Price;
+        item.ActualPrice = (float)model.ActualPrice;
         item.Vat = model.Vat;
         item.UnitId = model.UnitId;
 
@@ -255,6 +259,7 @@ public class ItemService : IItemService
                 var newCi = new ColorItemModel
                 {
                     ItemId = item.Id,
+                    //ItemsModelId = item.Id,
                     ColorId = colorId,
                     Quantity = colorVm.Quantity
                 };

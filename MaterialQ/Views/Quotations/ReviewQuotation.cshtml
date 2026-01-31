@@ -23,6 +23,8 @@
                         <th>Unit Price</th>
                         <th>VAT</th>
                         <th>Quantity</th>
+                        <th>Color</th>
+                        <th>Discount (%)</th>
                         <th>Total</th>
                         <th style="width: 60px;"></th>
                     </tr>
@@ -80,8 +82,10 @@
             const cartBody = document.getElementById("cartBody");
             const subtotalEl = document.getElementById("subtotal");
             const netEl = document.getElementById("netAmount");
+
             let subtotal = 0;
             cartBody.innerHTML = "";
+       
 
             if (cart.length === 0) {
                 cartBody.innerHTML = `
@@ -97,58 +101,183 @@
 
             cart.forEach(item => {
                 const vat = parseFloat(item.vat || 0);
-                const total = (item.price * item.qty) + vat;
-                subtotal += total;
+                       const discount = parseFloat(item.discount || 0);
+        const lineTotal = (item.price * item.qty) - discount + vat;
 
-                const row = `
-                    <tr>
-                        <td>${item.code}</td>
-                        <td>${item.description}</td>
-                        <td>${item.unit}</td>
-                        <td>${item.price.toFixed(2)}</td>
-                        <td>${vat.toFixed(2)}</td>
-                        <td>
-                            <input type="number" min="1" value="${item.qty}"
-                                class="form-control form-control-sm text-center qty-input"
-                                data-id="${item.id}">
-                        </td>
-                        <td>${total.toFixed(2)}</td>
-                        <td class="text-end">
-                            <button type="button" class="btn btn-sm btn-danger" onclick="removeFromCart('${item.id}')">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`;
+        subtotal += lineTotal;
+
+            item.discount = parseFloat(item.discount) || 0;
+        const row = `
+        <tr>
+            <td>${item.code}</td>
+            <td>${item.itemDescription}</td>
+            <td>${item.unit}</td>
+            <td>${item.price.toFixed(2)}</td>
+            <td>${vat.toFixed(2)}</td>
+
+            <td>
+                 <input type="number" min="1" value="${item.qty}"
+                    class="form-control form-control-sm text-center qty-input"
+                    data-id="${item.id}"
+                    data-colorid="${item.colorId}">
+
+            </td>
+
+            <td>
+                <span class="badge bg-dark">${item.colorName}</span>
+            </td>
+
+            <td>
+                  <input type="number" min="0" value="${discount}"
+                        class="form-control form-control-sm text-center discount-input"
+                        data-id="${item.id}"
+                        data-colorid="${item.colorId}"
+                        style="width:80px">
+
+            </td>
+
+                    <td class="line-total"
+            data-id="${item.id}"
+            data-colorid="${item.colorId}">
+          ${lineTotal.toFixed(2)}
+        </td>
+
+
+            <td class="text-end">
+                <button type="button" class="btn btn-sm btn-danger"
+                        onclick="removeFromCart('${item.id}', '${item.colorId}')">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+
                 cartBody.insertAdjacentHTML("beforeend", row);
             });
 
             subtotalEl.textContent = subtotal.toFixed(2);
             updateNetAmount();
 
+
             document.querySelectorAll(".qty-input").forEach(input => {
-                input.addEventListener("change", e => {
-                    updateQty(e.target.dataset.id, parseInt(e.target.value));
-                });
+            input.addEventListener("input", e => {
+                updateQty(e.target.dataset.id, parseFloat(e.target.value), e.target.dataset.colorid);
             });
+        });
+
+                document.querySelectorAll(".discount-input").forEach(input => {
+            input.addEventListener("input", e => {
+                updateDiscount(
+                    e.target.dataset.id,
+                    parseFloat(e.target.value),
+                    e.target.dataset.colorid
+                );
+            });
+      
+
+        });
+
+        
+
+        }
+                      function updateDiscount(id, discount, colorId) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const item = cart.find(i => i.id == id && i.colorId == colorId);
+
+            if (!item) return;
+
+            item.discount = discount >= 0 ? discount : 0;
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            updateLineTotal(item); // ✅ تحديث Total السطر
+            recalcTotals();        // ✅ تحديث Subtotal
         }
 
-        // تحديث الكمية
-        function updateQty(id, newQty) {
+        function updateQty(id, newQty, colorId) {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            const item = cart.find(i => i.id == id);
-            if (item) {
-                item.qty = newQty;
-                localStorage.setItem("cart", JSON.stringify(cart));
-                loadCart();
+            const item = cart.find(i => i.id == id && i.colorId == colorId);
+
+            if (!item) return;
+
+            if (newQty > item.availableQty) {
+                alert(`Only ${item.availableQty} units are available for color "${item.colorName}".`);
+                return;
             }
+
+            item.qty = newQty > 0 ? newQty : 1;
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            updateLineTotal(item); // ✅ تحديث Total السطر
+            recalcTotals();        // ✅ تحديث Subtotal
         }
 
-        function removeFromCart(id) {
+
+                    function recalcTotals() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let subtotal = 0;
+
+            cart.forEach(item => {
+                subtotal += updateLineTotal(item);
+            });
+
+            document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+            updateNetAmount();
+        }
+
+        function removeFromCart(id, colorId) {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            cart = cart.filter(i => i.id != id);
+            cart = cart.filter(i => !(i.id == id && i.colorId == colorId));
             localStorage.setItem("cart", JSON.stringify(cart));
             loadCart();
         }
+
+                      function updateLineTotal(item) {
+            const price = parseFloat(item.price) || 0;
+            const qty = parseFloat(item.qty) || 0;
+            const discount = parseFloat(item.discount) || 0; // ⭐ الحل
+            const vat = parseFloat(item.vat) || 0;
+
+            const base = price * qty;
+            const discountAmount = base * (discount / 100);
+            const lineTotal = base - discountAmount + vat;
+
+            const cell = document.querySelector(
+                `.line-total[data-id="${item.id}"][data-colorid="${item.colorId}"]`
+            );
+
+            if (cell) {
+                cell.textContent = lineTotal.toFixed(2);
+            }
+
+            return lineTotal;
+        }
+                function hasSellingPriceHigherThanOriginal() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            for (let item of cart) {
+                const price = parseFloat(item.price) || 0;
+                const qty = parseFloat(item.qty) || 0;
+                const vat = parseFloat(item.vat) || 0;
+                const discount = parseFloat(item.discount) || 0;
+
+                const originalTotal = (price * qty) + vat;
+
+                const base = price * qty;
+                const discountAmount = base * (discount / 100);
+                const sellingTotal = base - discountAmount + vat;
+
+                if (sellingTotal < originalTotal) {
+                    return {
+                        hasIssue: true,
+                        itemName: item.itemDescription,
+                        originalTotal,
+                        sellingTotal
+                    };
+                }
+            }
+
+            return { hasIssue: false };
+        }
+
 
         function updateNetAmount() {
             const subtotal = parseFloat(document.getElementById("subtotal").textContent) || 0;
@@ -161,32 +290,45 @@
             document.getElementById("companyError").style.display = "none";
         }
 
-        async function saveQuotation() {
+              async function saveQuotation() {
+
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
-            if (cart.length === 0) return alert("Cart is empty!");
+            if (cart.length === 0) {
+                alert("Cart is empty");
+                return;
+            }
 
-            const discount = parseFloat(document.getElementById("discount").value) || 0;
-            const subtotal = parseFloat(document.getElementById("subtotal").textContent) || 0;
-            const net = parseFloat(document.getElementById("netAmount").textContent) || 0;
-            const companyName = document.getElementById("companyName").value.trim();
-
-            if (companyName.length === 0) {
-            document.getElementById("companyError").style.display = "block";
-            return; 
-        }
             const quotation = {
                 customerName: document.getElementById("companyName").value,
-                discount: discount,
-                totalAmount: subtotal,
-                netAmount: net,
+                discount: parseFloat(document.getElementById("discount").value) || 0,
+                totalAmount: parseFloat(document.getElementById("subtotal").textContent) || 0,
+                netAmount: parseFloat(document.getElementById("netAmount").textContent) || 0,
                 items: cart.map(i => ({
-                               itemId: parseInt(i.id),
-        itemDescription: i.itemDescription,
-                            quantity: i.qty,
-                            unitPrice: i.price,
-                            vat: i.vat
-                                    }))
+                    itemId: i.id,
+                    colorId: i.colorId,
+                    itemDescription: i.itemDescription,
+                    quantity: i.qty,
+                    unitPrice: i.price,
+                    vat: i.vat,
+                    discount: i.discount || 0
+                }))
             };
+                    const priceCheck = hasSellingPriceHigherThanOriginal();
+
+        if (priceCheck.hasIssue) {
+            const confirmResult = confirm(
+                `⚠️ Warning!\n\n` +
+                `The selling total for item:\n"${priceCheck.itemName}"\n\n` +
+                `Selling Total: ${priceCheck.sellingTotal.toFixed(2)} JOD\n` +
+                `Original Total: ${priceCheck.originalTotal.toFixed(2)} JOD\n\n` +
+                `Selling price is higher than the original price.\n\n` +
+                `Do you want to continue anyway?`
+            );
+
+            if (!confirmResult) {
+                return; // ❌ أوقف الحفظ
+            }
+        }
 
             try {
                 const res = await fetch('/Quotations/SaveQuotation', {
@@ -196,17 +338,23 @@
                 });
 
                 const data = await res.json();
-                if (data.success) {
-                    alert("✅ Quotation saved successfully!");
-                    localStorage.removeItem("cart");
-                    window.location.href = '/Quotations/Index';
-                } else {
-                    alert("❌ " + (data.message || "Failed to save quotation"));
+
+                // ❌ Error → stay on page
+                if (!data.success) {
+                    alert(data.message);
+                    return;
                 }
+
+                // ✅ Success
+                // alert("Quotation saved successfully");
+                localStorage.removeItem("cart");
+                window.location.href = "/Quotations/Index";
+
             } catch (err) {
+                alert("Unexpected error occurred");
                 console.error(err);
-                alert("⚠️ Error saving quotation.");
             }
         }
+
     </script>
 }

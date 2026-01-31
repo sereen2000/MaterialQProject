@@ -1,4 +1,5 @@
 ﻿@model MaterialQ.Models.ViewModels.DashboardViewModel
+
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/LayoutMain.cshtml";
@@ -8,12 +9,15 @@
     <h1>Quotation Dashboard</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Main" asp-action="Index">Home</a></li>
             <li class="breadcrumb-item active">Dashboard</li>
         </ol>
     </nav>
 </div>
-@if (Model.LowStockItems.Any())
+@* 
+
+<!-- LOW STOCK ALERT --> *@
+@if (Model.LowStockItems != null && Model.LowStockItems.Any())
 {
     <div class="alert alert-warning shadow-sm border-warning" style="border-left:5px solid #ff9900;">
         <div class="d-flex align-items-center mb-2">
@@ -32,9 +36,7 @@
                         <span class="text-muted">| @item.ColorName</span>
                     </div>
 
-                    <span class="badge bg-danger rounded-pill">
-                        @item.Qty left
-                    </span>
+                    <span class="badge bg-danger rounded-pill">@item.Qty left</span>
                 </li>
             }
         </ul>
@@ -43,45 +45,29 @@
 
 <section class="section dashboard">
     <div class="row">
+        <div class="row">
 
-        <!-- Summary Cards -->
-        <div class="col-md-3">
-            <div class="card info-card text-center shadow-sm border-0">
-                <div class="card-body py-3">
-                    <h6 class="card-title text-muted">Total Quotations</h6>
-                    <h3 class="fw-bold">@((ViewBag.TotalCount ?? 0).ToString())</h3>
+            <div class="col-md-4 mb-3">
+                <div class="border rounded p-3 text-center">
+                    <h6 class="text-muted mb-1">Total Quotations</h6>
+                    <h4 class="fw-bold">@ViewBag.TotalCount</h4>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-3">
-            <div class="card info-card text-center shadow-sm border-0">
-                <div class="card-body py-3">
-                    <h6 class="card-title text-muted">Total Amount</h6>
-                    <h3 class="fw-bold text-success">
-                        @(ViewBag.TotalAmount != null ? String.Format("{0:N2}", ViewBag.TotalAmount) : "0.00") JOD
-                    </h3>
+            <div class="col-md-4 mb-3">
+                <div class="border rounded p-3 text-center">
+                    <h6 class="text-muted mb-1">Total Items</h6>
+                    <h4 class="fw-bold">@ViewBag.ItemsCount</h4>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-3">
-            <div class="card info-card text-center shadow-sm border-0">
-                <div class="card-body py-3">
-                    <h6 class="card-title text-muted">Approved Quotations</h6>
-                    <h3 class="fw-bold text-success">@((ViewBag.ApprovedCount ?? 0).ToString())</h3>
+            <div class="col-md-4 mb-3">
+                <div class="border rounded p-3 text-center">
+                    <h6 class="text-muted mb-1">Users</h6>
+                    <h4 class="fw-bold">@ViewBag.UsersCount</h4>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-3">
-            <div class="card info-card text-center shadow-sm border-0">
-                <div class="card-body py-3">
-                    <h6 class="card-title text-muted">Draft / Rejected</h6>
-                    <h3 class="fw-bold text-warning">@((ViewBag.DraftCount ?? 0).ToString())</h3>
-                    <small class="text-danger">Rejected: @((ViewBag.RejectedCount ?? 0).ToString())</small>
-                </div>
-            </div>
         </div>
 
         <!-- Recent Quotations -->
@@ -97,8 +83,8 @@
                                 <th>Quotation Number</th>
                                 <th>Customer</th>
                                 <th>Date</th>
-                                <th>Status</th>
                                 <th>Total</th>
+                                <th>Net Amount</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -111,28 +97,12 @@
                                         <td>@q.Id</td>
                                         <td>@q.QuotationNumber</td>
                                         <td>@q.CustomerName</td>
-                                        <td>@(q.DateCreated != null ? q.DateCreated.ToString("yyyy-MM-dd") : "-")</td>
-                                        <td>
-                                            @if (q.Status == "Approved")
-                                            {
-                                                <span class="badge bg-success">Approved</span>
-                                            }
-                                            else if (q.Status == "Draft")
-                                            {
-                                                <span class="badge bg-warning text-dark">Draft</span>
-                                            }
-                                            else if (q.Status == "Rejected")
-                                            {
-                                                <span class="badge bg-danger">Rejected</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-secondary">Unknown</span>
-                                            }
-                                        </td>
+                                        <td>@q.DateCreated.ToString("yyyy-MM-dd")</td>
+                                        
                                         <td>@String.Format("{0:N2}", q.TotalAmount)</td>
+                                        <td>@String.Format("{0:N2}", q.NetAmount)</td>
                                         <td>
-                                            <a asp-action="Details" asp-route-id="@q.Id" class="btn btn-sm btn-outline-primary">
+                                            <a asp-controller="Quotations" asp-action="Details" asp-route-id="@q.Id" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye"></i>
                                             </a>
                                         </td>
@@ -149,6 +119,7 @@
                             }
                         </tbody>
                     </table>
+
                 </div>
             </div>
         </div>
