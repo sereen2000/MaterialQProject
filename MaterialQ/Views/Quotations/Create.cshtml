@@ -8,13 +8,31 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-plus-circle me-2"></i> Select Items</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          
 
-        <a asp-controller="Quotations" asp-action="ReviewQuotation" class="btn btn-outline-secondary position-relative">
+            <div>
+                <button type="button" class="btn btn-warning me-2" onclick="addAllToCart()">
+                    <i class="bi bi-cart-plus"></i> Add All to Cart
+                </button>
+
+                <a asp-controller="Quotations" asp-action="ReviewQuotation"
+                   class="btn btn-outline-secondary position-relative">
+
+                    <i class="bi bi-cart"></i> Cart
+                    <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+                </a>
+            </div>
+        </div>
+
+    @*     <a asp-controller="Quotations" asp-action="ReviewQuotation" class="btn btn-outline-secondary position-relative">
             <i class="bi bi-cart3"></i> Cart
             <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 0
             </span>
-        </a>
+        </a> *@
     </div>
 
    <form method="get" class="row g-3 mb-4">
@@ -41,9 +59,9 @@
                         <th>Code</th>
                         <th>Name</th>
                         <th>Unit</th>
+                        <th>Actual Price</th>
                         <th>Unit Price</th>
-                        <th>Vat</th>
-                        <th style="width: 100px;">Color</th>
+                        <th>VAT</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -56,22 +74,10 @@
                                 <td>@item.Code</td>
                                 <td>@item.Description</td>
                                 <td>@item.Unit?.Name</td>
+                                <td>@item.ActualPrice.ToString("F2")</td>
                                 <td>@item.Price.ToString("F2")</td>
-                                <td>@item.Vat</td>
-                                <td>
-                                    <select class="form-select form-select-sm color-select">
-                                        <option value="">Select color</option>
-                                        @foreach (var c in item.ColorItems)
-                                        {
-                                            <option value="@c.ColorId"
-                                                    data-color-name="@c.Color?.Name"
-                                                    data-stock="@c.Quantity">
-                                                @c.Color?.Name (@c.Quantity)
-                                            </option>
-                                        }
+                                <td>@item.Vat.ToString("F2")</td>
 
-                                    </select>
-                                </td>
                                 <td class="text-end">
                                     <button type="button"
                                             class="btn btn-sm btn-success"
@@ -80,25 +86,73 @@
                                     </button>
                                 </td>
                             </tr>
-
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="7" class="text-center text-muted py-4">
                                 No items found.
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+
         </div>
     </div>
 </div>
 @section Scripts {
     <script>
-            function addToCart(id, btn) {
+
+        function addAllToCart() {
+
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            // خذ كل الصفوف من الجدول الحالي (بدون #itemsTable)
+            document.querySelectorAll("table tbody tr").forEach(row => {
+
+                // إذا الصف عبارة عن "No items found" نتجاهله
+                if (row.querySelector("td[colspan]")) return;
+
+                const id = row.querySelector("button")?.getAttribute("onclick")
+                    ?.match(/'([^']+)'/)?.[1];
+
+                if (!id) return;
+
+                const code = row.children[0].innerText.trim();
+                const description = row.children[1].innerText.trim();
+                const unit = row.children[2].innerText.trim();
+                const actualPrice = parseFloat(row.children[3].innerText.trim()) || 0;
+                const price = parseFloat(row.children[4].innerText.trim()) || 0;
+                const vat = parseFloat(row.children[5].innerText.trim()) || 0;
+
+                const existing = cart.find(i => i.id === id);
+
+                if (!existing) {
+                    cart.push({
+                        id: id,
+                        code: code,
+                        itemDescription: description,
+                        unit: unit,
+                        price: price,
+                        actualPrice: actualPrice,
+                        vat: vat,
+                        qty: 1
+                    });
+                }
+            });
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            // تحديث العدد فوق الأيقونة (مجموع الكميات)
+            document.getElementById("cartCount").innerText =
+                cart.reduce((sum, x) => sum + x.qty, 0);
+
+            alert("All products added to cart ✅");
+        }
+
+        function addToCart(id, btn) {
 
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -107,33 +161,13 @@
             const code = row.children[0].innerText.trim();
             const description = row.children[1].innerText.trim();
             const unit = row.children[2].innerText.trim();
-            const price = parseFloat(row.children[3].innerText.trim()) || 0;
-            const vat = parseFloat(row.children[4].innerText.trim()) || 0;
+            const actualPrice = parseFloat(row.children[3].innerText.trim()) || 0;
+            const price = parseFloat(row.children[4].innerText.trim()) || 0;
+            const vat = parseFloat(row.children[5].innerText.trim()) || 0;
 
-            const colorSelect = row.querySelector(".color-select");
-            const selectedOption = colorSelect.options[colorSelect.selectedIndex];
-
-            if (!selectedOption.value) {
-                alert("⚠ Please select color first");
-                return;
-            }
-
-            const colorId = selectedOption.value;
-            const colorName = selectedOption.dataset.colorName;
-            const stock = parseInt(selectedOption.dataset.stock) || 0;
-
-            if (stock <= 0) {
-                alert("❌ This color is out of stock");
-                return;
-            }
-
-            const existing = cart.find(x => x.id === id && x.colorId === colorId);
+            const existing = cart.find(x => x.id === id);
 
             if (existing) {
-                if (existing.qty + 1 > stock) {
-                    alert("❌ Quantity exceeds available stock");
-                    return;
-                }
                 existing.qty++;
             } else {
                 cart.push({
@@ -142,23 +176,28 @@
                     itemDescription: description,
                     unit: unit,
                     price: price,
+                    actualPrice: actualPrice,
                     vat: vat,
-                    colorId: colorId,
-                    colorName: colorName,
-                    stock: stock,
                     qty: 1
                 });
             }
 
             localStorage.setItem("cart", JSON.stringify(cart));
-            document.getElementById("cartCount").innerText = cart.length;
-        }
 
+            document.getElementById("cartCount").innerText =
+                cart.reduce((sum, x) => sum + x.qty, 0);
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
-            document.getElementById("cartCount").innerText = cart.length;
+            document.getElementById("cartCount").innerText =
+                cart.reduce((sum, x) => sum + x.qty, 0);
         });
+
     </script>
 }
+
+
+
+
 

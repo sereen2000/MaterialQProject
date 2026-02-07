@@ -14,15 +14,19 @@ namespace MaterialQ.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IItemService _itemService;
+        private readonly IWebHostEnvironment _env;
 
-        public QuotationsController(ApplicationDbContext context, IItemService itemService)
+        public QuotationsController(ApplicationDbContext context, IItemService itemService, IWebHostEnvironment env)
         {
             _context = context;
             _itemService = itemService;
+            _env = env;
         }
+      
         public async Task<IActionResult> Index(string? from, string? to, string? search)
         {
-            var query = _context.Quotations.AsQueryable();
+            var query = _context.Quotations.Include(q => q.Company).AsQueryable();
+
 
             if (!string.IsNullOrEmpty(from))
             {
@@ -39,10 +43,18 @@ namespace MaterialQ.Controllers
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(q =>
-                    q.CustomerName.Contains(search) ||
-                    q.QuotationNumber.Contains(search));
-            }
 
+                    q.QuotationNumber.Contains(search));
+                   
+               
+            }
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(q =>
+
+                    q.Company.Name.Contains(search));
+
+            }
             var result = await query
                 .OrderByDescending(q => q.DateCreated)
                 .ToListAsync();
@@ -76,11 +88,15 @@ namespace MaterialQ.Controllers
         }
 
         [HttpGet]
-        public IActionResult ReviewQuotation()
+        public async Task<IActionResult> ReviewQuotation()
         {
+
+            ViewBag.Companies = await _context.Companies
+        .OrderBy(c => c.Name)
+        .ToListAsync();
             return View();
         }
-      
+
         [HttpPost]
         public async Task<IActionResult> SaveQuotation([FromBody] QuotationModel quotation)
         {
@@ -89,29 +105,31 @@ namespace MaterialQ.Controllers
                 if (quotation == null || quotation.Items == null || !quotation.Items.Any())
                     return Json(new { success = false, message = "Quotation is empty." });
 
-                quotation.QuotationNumber = $"Q-{DateTime.Now:yyyyMMddHHmmss}";
+                var lastQuotation = await _context.Quotations
+                    .OrderByDescending(q => q.Id)
+                    .FirstOrDefaultAsync();
+
+                int nextNumber = (lastQuotation?.Id ?? 0) + 1;
+
+                quotation.QuotationNumber = $"Q-{DateTime.Now:yyyy}-{nextNumber:D4}";
                 quotation.DateCreated = DateTime.Now;
                 quotation.Status = "Draft";
-                //quotation.TotalAmount = quotation.Items.Sum(i => (i.Quantity * i.UnitPrice) + i.Vat);
-                // 1️⃣ حساب المجموع مع VAT * الكمية
-                quotation.TotalAmount = quotation.Items.Sum(i =>
-                {
-                    var baseAmount = i.Quantity * i.UnitPrice;
-                    var discountAmount = baseAmount * (i.Discount / 100m);
-                    return baseAmount - discountAmount + i.Vat;
-                });
+                quotation.CreatedBy = User?.Identity?.Name ?? "System";
 
-                // 2️⃣ الخصم كنسبة مئوية (0 – 100)
+                
+                quotation.TotalAmount = quotation.Items.Sum(i =>
+                    (i.UnitPrice * i.Quantity) + i.Vat
+                );
+
                 var discountAmount = quotation.TotalAmount * (quotation.Discount / 100m);
 
-                // 3️⃣ الصافي بعد الخصم
                 quotation.NetAmount = quotation.TotalAmount - discountAmount;
-                quotation.CreatedBy = User?.Identity?.Name ?? "System";
+
 
                 var newQuotation = new QuotationModel
                 {
                     QuotationNumber = quotation.QuotationNumber,
-                    CustomerName = quotation.CustomerName,
+                    CompanyId = quotation.CompanyId,
                     DateCreated = quotation.DateCreated,
                     CreatedBy = quotation.CreatedBy,
                     TotalAmount = quotation.TotalAmount,
@@ -119,55 +137,24 @@ namespace MaterialQ.Controllers
                     NetAmount = quotation.NetAmount,
                     Status = quotation.Status
                 };
-                foreach (var item in quotation.Items)
-                {
-                    var colorStock = await _context.ColorItem
-                        .Include(c => c.Color)   // ✅ مهم
-                        .FirstOrDefaultAsync(c =>
-                            c.ItemId == item.ItemId &&
-                            c.ColorId == item.ColorId);
-
-                    if (colorStock == null)
-                        return Json(new { success = false, message = "Color not found" });
-
-                    if (item.Quantity > colorStock.Quantity)
-                    {
-                        return Json(new
-                        {
-                            success = false,
-                            message = $"Requested quantity is not available. Color: {colorStock.Color.Name}, Available stock: {colorStock.Quantity}."
-                        });
-                    }
-
-                }
 
                 _context.Quotations.Add(newQuotation);
                 await _context.SaveChangesAsync();
 
+                
                 foreach (var item in quotation.Items)
                 {
-                    var colorStock = await _context.ColorItem
-                        .FirstOrDefaultAsync(c =>
-                            c.ItemId == item.ItemId &&
-                            c.ColorId == item.ColorId);
-
-                    colorStock.Quantity -= item.Quantity;
-
                     _context.QuotationItems.Add(new QuotationItemsModel
                     {
                         ItemId = item.ItemId,
-                        ColorId = item.ColorId,
                         ItemDescription = item.ItemDescription,
                         Quantity = item.Quantity,
-                        UnitPrice = item.UnitPrice,
+                        UnitPrice = item.UnitPrice,    
+                        ActualPrice = item.ActualPrice,  
                         Vat = item.Vat,
-                        Discount = item.Discount,
                         QuotationId = newQuotation.Id
                     });
                 }
-
-                await _context.SaveChangesAsync();
-
 
                 await _context.SaveChangesAsync();
 
@@ -175,112 +162,258 @@ namespace MaterialQ.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "An error occurred while saving: " + ex.InnerException?.Message ?? ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = "An error occurred while saving: " + (ex.InnerException?.Message ?? ex.Message)
+                });
             }
         }
+
 
         [HttpGet]
         public async Task<IActionResult> ExportToPdf(int id)
         {
-            var quotation = await _context.Quotations
+            var lpo = await _context.Quotations
                 .Include(q => q.Items)
+                .Include(q => q.Company)
                 .FirstOrDefaultAsync(q => q.Id == id);
 
-            if (quotation == null)
+            if (lpo == null)
                 return NotFound();
+
+            // This data should be fetched from your database
+            var lpoData = new
+            {
+                Date = new DateTime(2025, 11, 10),
+                FromCompany = "Building Art Com. Bro. L.L.C",
+                FromTel = "02-5864000",
+                FromFax = "02-5864004",
+                FromContact = "Ahmed Al Abdullat",
+                ToCompany = lpo.Company.Name,
+                ToTel = "050-8401185",
+                ToFax = "0",
+                ToAttention = "Mr. SHAHID",
+                PlaceDeliver = "Abu Dhabi - Mafraq Industrial Area",
+                Contact = "050-9059922"
+            };
 
             using (var ms = new MemoryStream())
             {
-                var document = new Document(PageSize.A4, 40, 40, 40, 40);
-                PdfWriter.GetInstance(document, ms);
+                var document = new Document(PageSize.A4, 30, 30, 30, 30);
+                PdfWriter writer = PdfWriter.GetInstance(document, ms);
                 document.Open();
 
-                // ===== Fonts =====
-                var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18);
-                var headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 11);
-                var normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 10);
-                var boldFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10);
+                // --- FONTS ---
+                var arabicFontPath = Path.Combine(_env.WebRootPath, "font", "Amiri-Regular.ttf");
+                if (!System.IO.File.Exists(arabicFontPath))
+                    throw new FileNotFoundException("Arabic font not found at: " + arabicFontPath);
 
-                // ===== Title =====
-                var title = new Paragraph("QUOTATION", titleFont)
+                BaseFont arabicBase = BaseFont.CreateFont(arabicFontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+                Font fontArabicBold = new Font(arabicBase, 12, Font.BOLD);
+                Font fontArabicNormal = new Font(arabicBase, 10, Font.NORMAL);
+                Font fontEnglishBold = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9);
+                Font fontEnglishNormal = FontFactory.GetFont(FontFactory.HELVETICA, 9);
+
+                // --- HEADER ---
+                var headerTable = new PdfPTable(2);
+                headerTable.WidthPercentage = 100;
+                headerTable.SetWidths(new float[] { 60, 40 }); // Right side larger
+                headerTable.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+
+                // -- Company Info Cell (Right)
+                var companyInfoCell = new PdfPCell { Border = Rectangle.NO_BORDER, PaddingRight = 10, HorizontalAlignment = Element.ALIGN_LEFT };
+                companyInfoCell.AddElement(new Paragraph("شركة فن البناء للوساطة التجارية ذ.م.م", fontArabicBold) { Alignment = Element.ALIGN_LEFT });
+                companyInfoCell.AddElement(new Paragraph("تلفون: 02/5864000", fontArabicNormal) { Alignment = Element.ALIGN_LEFT });
+                companyInfoCell.AddElement(new Paragraph("فاكس: 02/5864004", fontArabicNormal) { Alignment = Element.ALIGN_LEFT });
+                companyInfoCell.AddElement(new Paragraph("صندوق بريد: 92477", fontArabicNormal) { Alignment = Element.ALIGN_LEFT });
+                companyInfoCell.AddElement(new Paragraph("موبايل: 050-3196919 / 050-6115988", fontArabicNormal) { Alignment = Element.ALIGN_LEFT });
+                companyInfoCell.AddElement(new Paragraph("بريد إلكتروني: buildingart_cb@yahoo.com", fontArabicNormal) { Alignment = Element.ALIGN_LEFT });
+                companyInfoCell.AddElement(new Paragraph("المكتب الرئيسي: المفرق الصناعية", fontArabicNormal) { Alignment = Element.ALIGN_LEFT });
+                headerTable.AddCell(companyInfoCell);
+
+                // -- Logo Cell (Left)
+                var logoCell = new PdfPCell { Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_LEFT };
+                try
                 {
-                    Alignment = Element.ALIGN_CENTER,
-                    SpacingAfter = 15
-                };
-                document.Add(title);
-
-                // ===== Quotation Info =====
-                PdfPTable infoTable = new PdfPTable(2);
-                infoTable.WidthPercentage = 100;
-                infoTable.SetWidths(new float[] { 50, 50 });
-                infoTable.SpacingAfter = 15;
-
-                infoTable.AddCell(GetCell($"Quotation No: {quotation.QuotationNumber}", boldFont, Element.ALIGN_LEFT));
-                infoTable.AddCell(GetCell($"Date: {quotation.DateCreated:dd/MM/yyyy}", boldFont, Element.ALIGN_RIGHT));
-
-                infoTable.AddCell(GetCell($"Customer: {quotation.CustomerName}", normalFont, Element.ALIGN_LEFT));
-                //infoTable.AddCell(GetCell($"Status: {quotation.Status}", normalFont, Element.ALIGN_RIGHT));
-
-                document.Add(infoTable);
-
-                // ===== Items Table =====
-                PdfPTable table = new PdfPTable(6);
-                table.WidthPercentage = 100;
-                table.SetWidths(new float[] { 40, 10, 15, 15,15, 20 });
-                table.SpacingBefore = 10;
-
-                // Header
-                AddHeaderCell(table, "Item");
-                AddHeaderCell(table, "Qty");
-                AddHeaderCell(table, "Unit Price");
-                AddHeaderCell(table, "VAT");
-                AddHeaderCell(table, "Discount");
-                AddHeaderCell(table, "Total");
-
-                foreach (var item in quotation.Items)
-                {
-                    table.AddCell(GetCell(item.ItemDescription, normalFont, Element.ALIGN_LEFT));
-                    table.AddCell(GetCell(item.Quantity.ToString(), normalFont, Element.ALIGN_CENTER));
-                    table.AddCell(GetCell(item.UnitPrice.ToString("F2"), normalFont, Element.ALIGN_RIGHT));
-                    table.AddCell(GetCell(item.Vat.ToString("F2"), normalFont, Element.ALIGN_RIGHT));
-
-                    table.AddCell(GetCell(item.Discount.ToString("F2"), normalFont, Element.ALIGN_RIGHT));
-                    var baseAmount = item.UnitPrice * item.Quantity;
-                    var discountAmount = baseAmount * (item.Discount / 100m);
-                    var total = baseAmount - discountAmount + item.Vat;
-
-                    table.AddCell(GetCell(total.ToString("F2"), normalFont, Element.ALIGN_RIGHT));
-
-                   
+                    var logoPath = Path.Combine(_env.WebRootPath, "img", "LOGO_page.png");
+                    var logo = Image.GetInstance(logoPath);
+                    logo.ScaleToFit(120f, 120f);
+                    logoCell.AddElement(logo);
                 }
+                catch { logoCell.AddElement(new Paragraph("Building Art", fontEnglishBold)); }
+                headerTable.AddCell(logoCell);
+                document.Add(headerTable);
 
-                document.Add(table);
+                // --- L.P.O TITLE & DATE ---
+                var titleTable = new PdfPTable(2);
+                titleTable.WidthPercentage = 100;
+                titleTable.SetWidths(new float[] { 80, 20 });
+                titleTable.SpacingBefore = 15;
 
-                // ===== Summary =====
-                PdfPTable summaryTable = new PdfPTable(2);
-                summaryTable.WidthPercentage = 40;
-                summaryTable.HorizontalAlignment = Element.ALIGN_RIGHT;
-                summaryTable.SpacingBefore = 15;
+                var lpoTitleCell = new PdfPCell(new Phrase("L.P.O.", fontEnglishBold))
+                {
+                    Border = Rectangle.BOX,
+                    BackgroundColor = BaseColor.LightGray,
+                    HorizontalAlignment = Element.ALIGN_CENTER,
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    Padding = 5
+                };
+                titleTable.AddCell(lpoTitleCell);
 
-                summaryTable.AddCell(GetCell("Net Amount", boldFont, Element.ALIGN_LEFT));
-                summaryTable.AddCell(GetCell(quotation.NetAmount.ToString("F2") + " AED", boldFont, Element.ALIGN_RIGHT));
+                var dateCell = new PdfPCell(new Phrase($"Date: {lpoData.Date:dd.MM.yyyy}", fontEnglishBold))
+                {
+                    Border = Rectangle.BOX,
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    VerticalAlignment = Element.ALIGN_MIDDLE,
+                    Padding = 5
+                };
+                titleTable.AddCell(dateCell);
+                document.Add(titleTable);
 
-                document.Add(summaryTable);
+                // --- TO/FROM INFO ---
+                var toFromTable = new PdfPTable(2);
+                toFromTable.WidthPercentage = 100;
+                toFromTable.SpacingBefore = 5;
+
+                var toCell = new PdfPCell { Padding = 5 };
+                toCell.AddElement(new Phrase($"To: {lpoData.ToCompany}", fontEnglishBold));
+                toCell.AddElement(new Phrase($"Tel: {lpoData.ToTel}", fontEnglishNormal));
+                toCell.AddElement(new Phrase($"Fax: {lpoData.ToFax}", fontEnglishNormal));
+                toCell.AddElement(new Phrase($"Attention: {lpoData.ToAttention}", fontEnglishBold));
+                toFromTable.AddCell(toCell);
+
+                var fromCell = new PdfPCell { Padding = 5 };
+                fromCell.AddElement(new Phrase($"From: {lpoData.FromCompany}", fontEnglishBold));
+                fromCell.AddElement(new Phrase($"Tel: {lpoData.FromTel}", fontEnglishNormal));
+                fromCell.AddElement(new Phrase($"Fax: {lpoData.FromFax}", fontEnglishNormal));
+                fromCell.AddElement(new Phrase($"From: {lpoData.FromContact}", fontEnglishBold));
+                toFromTable.AddCell(fromCell);
+                document.Add(toFromTable);
+
+                // --- DELIVERY INFO ---
+                var deliveryCell = new PdfPCell { Padding = 5 };
+                deliveryCell.AddElement(new Phrase($"Company Name - {lpoData.FromCompany}", fontEnglishNormal));
+                deliveryCell.AddElement(new Phrase($"Place Deliver: {lpoData.PlaceDeliver}", fontEnglishNormal));
+                deliveryCell.AddElement(new Phrase($"Contact: {lpoData.Contact}", fontEnglishNormal));
+                var deliveryTable = new PdfPTable(1) { WidthPercentage = 100 };
+                deliveryTable.AddCell(deliveryCell);
+                document.Add(deliveryTable);
+
+                // --- ITEMS TABLE ---
+                var itemsTable = new PdfPTable(5);
+                itemsTable.WidthPercentage = 100;
+                itemsTable.SetWidths(new float[] { 8, 52, 10, 15, 15 });
+                itemsTable.SpacingBefore = 10;
+                itemsTable.HeaderRows = 1; // Repeat header on new pages
+
+                itemsTable.AddCell(CreateHeaderCell("No."));
+                itemsTable.AddCell(CreateHeaderCell("Description"));
+                itemsTable.AddCell(CreateHeaderCell("L.M"));
+                itemsTable.AddCell(CreateHeaderCell("Price"));
+                itemsTable.AddCell(CreateHeaderCell("Total Amount"));
+
+                int counter = 1;
+                foreach (var item in lpo.Items)
+                {
+                    itemsTable.AddCell(CreateItemCell(counter.ToString(), fontEnglishNormal, Element.ALIGN_CENTER));
+                    itemsTable.AddCell(CreateItemCell(item.ItemDescription, fontEnglishNormal, Element.ALIGN_LEFT));
+                    itemsTable.AddCell(CreateItemCell(item.Quantity.ToString(), fontEnglishNormal, Element.ALIGN_CENTER));
+                    itemsTable.AddCell(CreateItemCell(item.UnitPrice.ToString("F2"), fontEnglishNormal, Element.ALIGN_RIGHT));
+                    itemsTable.AddCell(CreateItemCell((item.Quantity * item.UnitPrice).ToString("F2"), fontEnglishNormal, Element.ALIGN_RIGHT));
+                    counter++;
+                }
+                document.Add(itemsTable);
+
+                // --- FOOTER SECTION (TOTALS, NOTES, SIGNATURES) ---
+                // This is the main fix: put everything in a single table to prevent page breaks.
+                var footerTable = new PdfPTable(1)
+                {
+                    WidthPercentage = 100,
+                    SpacingBefore = 10
+                };
+                footerTable.DefaultCell.Border = Rectangle.NO_BORDER;
+
+                // -- Totals
+                decimal subTotal = lpo.Items.Sum(i => i.Quantity * i.UnitPrice);
+                decimal vatAmount = subTotal * 0.05m;
+                decimal grandTotal = subTotal + vatAmount;
+
+                var totalsTable = new PdfPTable(2);
+                totalsTable.WidthPercentage = 45;
+                totalsTable.HorizontalAlignment = Element.ALIGN_RIGHT;
+                totalsTable.AddCell(CreateTotalCell("TOTAL", fontEnglishBold, BaseColor.White));
+                totalsTable.AddCell(CreateTotalCell(subTotal.ToString("F2"), fontEnglishNormal, BaseColor.White));
+                totalsTable.AddCell(CreateTotalCell("VAT 5%", fontEnglishBold, BaseColor.White));
+                totalsTable.AddCell(CreateTotalCell(vatAmount.ToString("F2"), fontEnglishNormal, BaseColor.White));
+                totalsTable.AddCell(CreateTotalCell("GRAND TOTAL", fontEnglishBold, BaseColor.LightGray));
+                totalsTable.AddCell(CreateTotalCell(grandTotal.ToString("F2"), fontEnglishBold, BaseColor.LightGray));
+                footerTable.AddCell(totalsTable);
+
+                // -- Notes
+                var notesCell = new PdfPCell { Border = Rectangle.NO_BORDER, PaddingTop = 20 };
+                notesCell.AddElement(new Paragraph("{Notes}:", fontEnglishBold));
+                notesCell.AddElement(new Paragraph("Payment Terms :AS AGREED", fontEnglishNormal));
+                notesCell.AddElement(new Paragraph("Kindly attach one copy of our L.P.O. with your invoice.", fontEnglishNormal));
+                footerTable.AddCell(notesCell);
+
+                // -- Signatures
+                var signatureTable = new PdfPTable(3);
+                signatureTable.WidthPercentage = 100;
+                signatureTable.SpacingBefore = 40;
+                signatureTable.AddCell(CreateSignatureCell("General manager"));
+                signatureTable.AddCell(CreateSignatureCell("Accountant"));
+                signatureTable.AddCell(CreateSignatureCell("Purchase Department"));
+                footerTable.AddCell(signatureTable);
+
+                // Add the entire footer block to the document
+                document.Add(footerTable);
 
                 document.Close();
-
-                return File(ms.ToArray(), "application/pdf",
-                    $"Quotation_{quotation.QuotationNumber}.pdf");
+                return File(ms.ToArray(), "application/pdf", $"LPO_{lpo.Id}.pdf");
             }
         }
-        private PdfPCell GetCell(string text, Font font, int alignment)
+
+        // --- HELPER METHODS (Updated CreateTotalCell) ---
+
+        private PdfPCell CreateHeaderCell(string text)
+        {
+            return new PdfPCell(new Phrase(text, FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 9)))
+            {
+                HorizontalAlignment = Element.ALIGN_CENTER,
+                Padding = 5,
+                BackgroundColor = new BaseColor(217, 217, 217)
+            };
+        }
+
+        private PdfPCell CreateItemCell(string text, Font font, int alignment)
         {
             return new PdfPCell(new Phrase(text, font))
             {
-                Border = Rectangle.NO_BORDER,
                 HorizontalAlignment = alignment,
-                Padding = 6
+                Padding = 5,
+                MinimumHeight = 20
             };
+        }
+
+        // Updated to handle background color
+        private PdfPCell CreateTotalCell(string text, Font font, BaseColor bgColor)
+        {
+            return new PdfPCell(new Phrase(text, font))
+            {
+                HorizontalAlignment = Element.ALIGN_RIGHT,
+                Padding = 5,
+                Border = Rectangle.BOX,
+                BackgroundColor = bgColor
+            };
+        }
+
+        private PdfPCell CreateSignatureCell(string title)
+        {
+            var cell = new PdfPCell { Border = Rectangle.NO_BORDER, HorizontalAlignment = Element.ALIGN_CENTER, PaddingTop = 20 };
+            cell.AddElement(new Phrase(title, FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10)));
+            cell.AddElement(new Phrase("____________________", FontFactory.GetFont(FontFactory.HELVETICA, 10)));
+            return cell;
         }
 
         private void AddHeaderCell(PdfPTable table, string text)
@@ -293,6 +426,65 @@ namespace MaterialQ.Controllers
             };
             table.AddCell(cell);
         }
+
+        private PdfPCell GetSignatureCell(string title)
+        {
+            var cell = new PdfPCell
+            {
+                Border = Rectangle.NO_BORDER,
+                PaddingTop = 30,
+                HorizontalAlignment = Element.ALIGN_RIGHT
+            };
+
+            cell.AddElement(new Phrase(title, FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10)));
+            cell.AddElement(new Phrase("__________________________", FontFactory.GetFont(FontFactory.HELVETICA, 10)));
+
+            return cell;
+        }
+
+        private PdfPCell GetCell(string text, Font font, int alignment)
+        {
+            return new PdfPCell(new Phrase(text, font))
+            {
+                Border = Rectangle.NO_BORDER,
+                HorizontalAlignment = alignment,
+                Padding = 6
+            };
+        }
+
+        private PdfPCell GetBoxCell(string text, Font font)
+        {
+            return new PdfPCell(new Phrase(text, font))
+            {
+                Border = Rectangle.NO_BORDER,
+                Padding = 5
+            };
+        }
+
+       
+    
+        private string NumberToWords(decimal amount)
+        {
+            long whole = (long)Math.Floor(amount);
+            return NumberToWords(whole);
+        }
+
+        private string NumberToWords(long number)
+        {
+            if (number == 0) return "Zero";
+
+            string[] units = { "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
+            string[] teens = { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
+            string[] tens = { "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
+
+            if (number < 10) return units[number];
+            if (number < 20) return teens[number - 10];
+            if (number < 100) return tens[number / 10] + (number % 10 != 0 ? " " + units[number % 10] : "");
+            if (number < 1000) return units[number / 100] + " Hundred" + (number % 100 != 0 ? " " + NumberToWords(number % 100) : "");
+
+            return number.ToString();
+        }
+
 
         public async Task<IActionResult> Edit(int? id)
         {
@@ -310,13 +502,13 @@ namespace MaterialQ.Controllers
                 return Json(new { success = false, message = "Invalid data" });
 
             var quotation = await _context.Quotations
+                .Include(q => q.Company)
                 .Include(q => q.Items)
                 .FirstOrDefaultAsync(q => q.Id == model.Id);
 
             if (quotation == null)
                 return Json(new { success = false, message = "Quotation not found" });
 
-            quotation.CustomerName = model.CustomerName;
             quotation.Discount = model.Discount;
             quotation.TotalAmount = model.TotalAmount;
             quotation.NetAmount = model.NetAmount;
@@ -331,7 +523,6 @@ namespace MaterialQ.Controllers
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice,
                     Vat = item.Vat,
-                    Discount = item.Discount
                 });
             }
 
@@ -346,11 +537,15 @@ namespace MaterialQ.Controllers
         {
             var quotation = await _context.Quotations
                 .Include(q => q.Items)
+                .Include(q => q.Company)
                 .FirstOrDefaultAsync(q => q.Id == id);
 
             if (quotation == null)
                 return NotFound();
-
+    
+            ViewBag.Companies = await _context.Companies
+                .OrderBy(c => c.Name)
+                .ToListAsync();
             return View(quotation);
         }
         [HttpPost]
@@ -358,12 +553,13 @@ namespace MaterialQ.Controllers
         {
             var quotation = await _context.Quotations
                 .Include(q => q.Items)
+                .Include(q => q.Company)
                 .FirstOrDefaultAsync(q => q.Id == id);
 
             if (quotation == null)
                 return NotFound();
 
-            quotation.CustomerName = updated.CustomerName;
+            quotation.CompanyId = updated.CompanyId;
             quotation.Discount = updated.Discount;
             quotation.NetAmount = updated.NetAmount;
             quotation.TotalAmount = updated.TotalAmount;
@@ -399,22 +595,7 @@ namespace MaterialQ.Controllers
 
             return Json(new { success = true, message = "Quotation deleted successfully!" });
         }
-        [HttpGet]
-        public async Task<IActionResult> GetItemColors(int itemId)
-        {
-            var colors = await _context.ColorItem
-                .Where(ci => ci.ItemId == itemId)
-                .Include(ci => ci.Color)
-                .Select(ci => new
-                {
-                    colorId = ci.ColorId,
-                    colorName = ci.Color.Name,
-                    quantity = ci.Quantity
-                })
-                .ToListAsync();
-
-            return Json(colors);
-        }
+        
 
         public async Task<IActionResult> Details(int? id)
         {
@@ -422,7 +603,8 @@ namespace MaterialQ.Controllers
                 return NotFound();
 
             var quotation = await _context.Quotations
-                .Include(q => q.Items) 
+                .Include(q => q.Items)
+                .Include(q => q.Company)
                 .FirstOrDefaultAsync(q => q.Id == id);
 
             if (quotation == null)

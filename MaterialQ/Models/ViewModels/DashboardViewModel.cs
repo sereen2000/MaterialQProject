@@ -16,5 +16,5 @@ public class LowStockItemViewModel
 {
     public string Code { get; set; }
     public string ColorName { get; set; }
-    public float Qty { get; set; }
+    public Double Qty { get; set; }
 }

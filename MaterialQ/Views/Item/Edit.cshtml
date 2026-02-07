@@ -1,5 +1,6 @@
 ﻿@model MaterialQ.Models.ViewModels.UpdateItemViewModel
 @using System.Text.Json
+
 @{
     ViewData["Title"] = "Edit Item";
     Layout = "~/Views/Shared/LayoutMain.cshtml";
@@ -21,75 +22,60 @@
             <div class="card-body">
                 <h5 class="card-title">Edit Item</h5>
 
-                <form method="post" enctype="multipart/form-data" id="editItemForm">
-                    <input type="hidden" name="Id" value="@Model.Id" />
+                <form id="editItemForm" method="post" enctype="multipart/form-data">
 
-                    <!-- Item Image -->
+
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label">Item Image</label>
                         <div class="col-sm-10">
                             @if (!string.IsNullOrEmpty(Model.ExistingImage))
                             {
-                                <img src="@Model.ExistingImage" alt="Item Image" width="100" class="mb-2" />
+                                <img src="@Model.ExistingImage" width="100" class="mb-2" />
                             }
                             <input class="form-control" type="file" name="ImageFile">
                         </div>
                     </div>
 
-                    <!-- Code -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label">Item Code</label>
+                        <label class="col-sm-2 col-form-label">Item Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="Code" value="@Model.Code" required />
+                            <input asp-for="Code" class="form-control" required />
                         </div>
                     </div>
 
-                    <!-- Description -->
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label">Description</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="Description" value="@Model.Description" required />
+                            <input asp-for="Description" class="form-control" required />
                         </div>
                     </div>
 
-                    <!-- Price -->
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label">Price</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" name="Price" value="@Model.Price" min="0" step="0.01" required />
+                            <input asp-for="Price" type="number" step="0.01" class="form-control" />
                         </div>
                     </div>
-                    <!--Actual Price -->
+
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label">Actual Price</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" name="ActualPrice"  value="@Model.ActualPrice" min="0" step="0.01" required />
+                            <input asp-for="ActualPrice" type="number" step="0.01" class="form-control" />
                         </div>
                     </div>
 
-                    <!-- VAT -->
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label">VAT</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" name="Vat" value="@Model.Vat" min="0" step="0.01" required />
+                            <input asp-for="Vat" type="number" step="0.01" class="form-control" />
                         </div>
                     </div>
 
-                    <!-- Colors Table -->
+                    <!-- كمية عامة -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label">Colors & Quantities</label>
+                        <label class="col-sm-2 col-form-label">Quantity</label>
                         <div class="col-sm-10">
-                            <table class="table table-bordered" id="colorTable">
-                                <thead>
-                                    <tr>
-                                        <th>Color</th>
-                                        <th>Quantity</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#colorModal">Add Color</button>
+                            <input asp-for="Qty" type="number" min="0" class="form-control" />
                         </div>
                     </div>
 
@@ -97,127 +83,16 @@
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label">Unit</label>
                         <div class="col-sm-10">
-                            <select id="unitSelect" class="form-select" name="UnitId" required>
-                                <option disabled>Select unit</option>
-                                @foreach (var unit in ViewBag.Units)
-                                {
-                                    @if (unit.Id == Model.UnitId)
-                                    {
-                                        <option value="@unit.Id" selected>@unit.Name</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@unit.Id">@unit.Name</option>
-                                    }
-                                }
-                                <option value="addUnit">➕ Add New</option>
+                            <select asp-for="UnitId" class="form-select" asp-items="@(new SelectList(ViewBag.Units, "Id", "Name"))">
                             </select>
                         </div>
                     </div>
 
-                    <input type="hidden" id="ColorsJson" name="ColorsJson" />
 
-                    <div class="row mb-3">
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-primary">Update Item</button>
-                        </div>
-                    </div>
+                    <hr />
+                    <button type="submit" class="btn btn-primary">Update Item</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Color Modal -->
-<div class="modal fade" id="colorModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header"><h5>Add Color</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <div class="modal-body">
-                <select id="colorSelect" class="form-select mb-2">
-                    <option disabled selected>Select color</option>
-                    @foreach (var color in ViewBag.Colors)
-                    {
-                        <option value="@color.Id">@color.Name</option>
-                    }
-                    <option value="addNew">➕ Add New</option>
-                </select>
-                <div id="newColorDiv" style="display:none;">
-                    <input type="text" id="newColorInput" class="form-control mb-2" placeholder="Enter new color name" />
-                </div>
-                <input type="number" id="newColorQty" class="form-control" placeholder="Enter quantity" min="1" />
-            </div>
-            <div class="modal-footer">
-                <button type="button" id="saveColorBtn" class="btn btn-primary">Save Color</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-<script>
-const colorSelect = document.getElementById("colorSelect");
-const newColorDiv = document.getElementById("newColorDiv");
-const newColorInput = document.getElementById("newColorInput");
-const colorQty = document.getElementById("newColorQty");
-const colorTableBody = document.querySelector("#colorTable tbody");
-const colorModal = new bootstrap.Modal(document.getElementById("colorModal"));
-const colorsJsonInput = document.getElementById("ColorsJson");
-let colorsList = [];
-
-// Load existing colors
-@if (ViewBag.ExistingColors != null)
-{
-    <text>
-        colorsList = @Html.Raw(JsonSerializer.Serialize(ViewBag.ExistingColors));
-        colorsList.forEach(color => addColorRow(color.ColorName, color.Quantity, color.ColorId));
-        colorsJsonInput.value = JSON.stringify(colorsList);
-    </text>
-}
-
-colorSelect.addEventListener("change", () => {
-    newColorDiv.style.display = colorSelect.value === "addNew" ? "block" : "none";
-});
-
-document.getElementById("saveColorBtn").addEventListener("click", () => {
-    let colorId = colorSelect.value;
-    let colorName = colorSelect.options[colorSelect.selectedIndex].text;
-    if (colorId === "addNew") { colorName = newColorInput.value.trim(); colorId = 0; }
-    const qty = parseInt(colorQty.value.trim());
-    if (!colorName || !qty) return alert("Invalid color or quantity");
-
-    addColorRow(colorName, qty, parseInt(colorId));
-    colorsList.push({ ColorId: parseInt(colorId), ColorName: colorName, Quantity: qty });
-    colorsJsonInput.value = JSON.stringify(colorsList);
-
-    colorSelect.selectedIndex = 0;
-    newColorDiv.style.display = "none";
-    newColorInput.value = "";
-    colorQty.value = "";
-    colorModal.hide();
-});
-
-function addColorRow(name, qty, colorId) {
-    const row = document.createElement("tr");
-    row.innerHTML = `<td>${name}</td><td>${qty}</td><td><button type='button' class='btn btn-danger btn-sm deleteRow'>🗑️</button></td>`;
-    colorTableBody.appendChild(row);
-    row.querySelector(".deleteRow").addEventListener("click", function () {
-        const index = Array.from(colorTableBody.children).indexOf(row);
-        colorsList.splice(index, 1);
-        colorsJsonInput.value = JSON.stringify(colorsList);
-        row.remove();
-    });
-}
-
-document.getElementById("editItemForm").addEventListener("submit", () => {
-    colorsJsonInput.value = JSON.stringify(colorsList);
-});
-
-document.getElementById("unitSelect").addEventListener("change", function () {
-    if (this.value === "addUnit") {
-        alert("Open Add Unit modal here.");
-        this.selectedIndex = 0;
-    }
-});
-</script>
-}

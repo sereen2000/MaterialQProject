@@ -12,19 +12,19 @@ public class MainController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly IItemService _itemRepo;
-    private readonly IItemColorService _itemColorRepo;
 
 
-    public MainController(ApplicationDbContext context, IItemService itemRepo , IItemColorService itemColorRepo)
+    public MainController(ApplicationDbContext context, IItemService itemRepo)
     {
         _context = context;
         _itemRepo = itemRepo;
-        _itemColorRepo = itemColorRepo;
     }
 
-   public async Task<IActionResult> Index()
-{
-        var quotations = await _context.Quotations.ToListAsync();
+   public async Task<IActionResult> Index() { 
+        var quotations = await _context.Quotations
+    .Include(q => q.Company)   
+    .OrderByDescending(q => q.DateCreated)
+    .ToListAsync();
 
         var totalCount = quotations.Count;
         var totalAmount = quotations.Any() ? quotations.Sum(q => q.TotalAmount) : 0;
@@ -44,25 +44,11 @@ public class MainController : Controller
         ViewBag.UsersCount = _context.Users.Count();
 
         ViewBag.Recent = recent;
-        var allColorItems = await _context.ColorItem
-            .Include(ci => ci.Color)
-            .Include(ci => ci.Item)
-            .AsNoTracking()
-            .ToListAsync();
-
-        var lowStockItems = allColorItems
-            .Where(ci => ci.Quantity <= 5)
-            .Select(ci => new LowStockItemViewModel
-            {
-                Code = ci.Item.Code,
-                ColorName = ci.Color.Name,
-                Qty = ci.Quantity
-            })
-            .ToList();
+        
+       
 
         var model = new DashboardViewModel
         {
-            LowStockItems = lowStockItems,
             TodaySales = 145,        
             ThisMonthRevenue = 3264,
             ThisYearCustomers = 1244
@@ -87,8 +73,9 @@ public class MainController : Controller
         // Bring quotations including items
         var quotations = await _context.Quotations
             .Include(q => q.Items)
+            .Include(q => q.Company)
             .ToListAsync();
-
+      
         ViewBag.TotalCount = quotations.Count;
 
         ViewBag.TotalAmount = quotations.Sum(q => q.TotalAmount);
@@ -106,18 +93,7 @@ public class MainController : Controller
             .Take(10)
             .ToList();
 
-        // Low stock items
-        var lowStockItems = await _context.ColorItem
-            .Include(ci => ci.Item)
-            .Include(ci => ci.Color)
-            .Where(ci => ci.Quantity <= 5)
-            .Select(ci => new LowStockItemViewModel
-            {
-                Code = ci.Item.Code,
-                ColorName = ci.Color.Name,
-                Qty = ci.Quantity
-            })
-            .ToListAsync();
+       
 
         // Today Sales = sum of today’s quotation totalAmount
         var todaySales = quotations
@@ -132,13 +108,12 @@ public class MainController : Controller
 
         // Year customers = unique customer names
         var customerCount = quotations
-            .Select(q => q.CustomerName)
+            .Select(q => q.Company.Name)
             .Distinct()
             .Count();
 
         var model = new DashboardViewModel
         {
-            LowStockItems = lowStockItems,
             TodaySales = todaySales,
             ThisMonthRevenue = monthRevenue,
             ThisYearCustomers = customerCount

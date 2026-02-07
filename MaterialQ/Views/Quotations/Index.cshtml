@@ -9,7 +9,6 @@
 
     <h2 class="mb-3">Quotations</h2>
 
-    <!-- 🔍 Filter & Search -->
     <form method="get" class="row g-3 mb-4">
 
         <div class="col-md-3">
@@ -64,7 +63,7 @@
                 <tr>
                     <td>@q.Id</td>
                     <td>@q.QuotationNumber</td>
-                    <td>@q.CustomerName</td>
+                    <td>@q.Company?.Name</td>
                     <td>@q.DateCreated.ToString("dd/MM/yyyy")</td>
                     <td>@q.TotalAmount</td>
                     <td>@q.NetAmount</td>

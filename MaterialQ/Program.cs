@@ -21,9 +21,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IItemService, ItemService>();
-builder.Services.AddScoped<IColorService, ColorService>();
 builder.Services.AddScoped<IUnitService, UnitService>();
-builder.Services.AddScoped<IItemColorService, ItemColorService>();
 builder.Services.AddHostedService<CheckStockService>();
 
 
