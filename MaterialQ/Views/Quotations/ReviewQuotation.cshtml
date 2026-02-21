@@ -6,25 +6,32 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-cart3 me-2"></i> Review Quotation</h2>
-
-        <a asp-controller="Quotations" asp-action="Create" class="btn btn-outline-primary">
-            <i class="bi bi-plus-circle"></i> Add More Items
-        </a>
+        <div>
+            <button type="button" class="btn btn-danger" onclick="clearCart()">
+                <i class="bi bi-trash"></i> Clear Cart
+            </button>
+            <a asp-controller="Quotations" asp-action="Create" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle"></i> Add More Items
+            </a>
+        </div>
+       
     </div>
-
+  
     <div class="card shadow-sm">
         <div class="card-body">
             <table id="cartTable" class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>Code</th>
+                        <th>Name</th>
                         <th>Description</th>
                         <th>Unit</th>
                         <th>Actual Price</th>
                         <th>Unit Price</th>
-                        <th>VAT</th>
+                        <th>VAT Amount</th>
                         <th>Quantity</th>
                         <th>Total</th>
+                        <th style="width:60px;">Delete</th>
+
                     </tr>
                 </thead>
                 <tbody id="cartBody"></tbody>
@@ -48,7 +55,7 @@
             <div class="d-flex flex-column align-items-end mt-4">
                 <div class="mb-2">
                     <label class="fw-bold me-2">Subtotal:</label>
-                    <span id="subtotal" class="text-primary fw-bold">0.00</span> JOD
+                    <span id="subtotal" class="text-primary fw-bold">0.00</span> AED
                 </div>
 
                 <div class="mb-2 d-flex align-items-center">
@@ -61,12 +68,12 @@
 
                 <div class="mb-2">
                     <label class="fw-bold me-2">Net Amount:</label>
-                    <span id="netAmount" class="text-success fw-bold">0.00</span> JOD
+                    <span id="netAmount" class="text-success fw-bold">0.00</span> AED
                 </div>
 
                 <div>
                     <label class="fw-bold me-2">Profit:</label>
-                    <span id="profit" class="text-warning fw-bold">0.00</span> JOD
+                    <span id="profit" class="text-warning fw-bold">0.00</span> AED
                 </div>
             </div>
         </div>
@@ -119,31 +126,39 @@
                 const actualPrice = parseFloat(item.actualPrice) || 0;
                 const vat = parseFloat(item.vat) || 0;
 
-                const sellingTotal = (sellingPrice * qty) + vat;
-                const costTotal = (actualPrice * qty) + vat;
-
+              
+                const vatAmount = (sellingPrice * qty) * 0.05;
+                const sellingTotal = (sellingPrice * qty) + vatAmount;
+                const costTotal = (actualPrice * qty) + vatAmount;
                 subtotal += sellingTotal;
                 totalCost += costTotal;
 
-                const row = `
-                <tr>
-                    <td>${item.code}</td>
-                    <td>${item.itemDescription}</td>
-                    <td>${item.unit}</td>
-                    <td>${actualPrice.toFixed(2)}</td>
-                    <td>${sellingPrice.toFixed(2)}</td>
-                    <td>${vat.toFixed(2)}</td>
+                       const row = `
+        <tr>
+            <td>${item.code}</td>
+            <td>${item.itemDescription}</td>
+            <td>${item.unit}</td>
+            <td>${actualPrice.toFixed(2)}</td>
+            <td>${sellingPrice.toFixed(2)}</td>
+            <td>${vatAmount.toFixed(2)}</td>
 
-                    <td>
-                        <input type="number" min="1" value="${qty}"
-                            class="form-control form-control-sm text-center qty-input"
-                            data-id="${item.id}">
-                    </td>
+            <td>
+                <input type="number" min="1" value="${qty}"
+                    class="form-control form-control-sm text-center qty-input"
+                    data-id="${item.id}">
+            </td>
 
-                    <td class="line-total" data-id="${item.id}">
-                        ${sellingTotal.toFixed(2)}
-                    </td>
-                </tr>`;
+            <td class="line-total" data-id="${item.id}">
+                ${sellingTotal.toFixed(2)}
+            </td>
+
+            <td class="text-center">
+                <button class="btn btn-sm btn-outline-danger"
+                    onclick="removeItem('${item.id}')">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </td>
+        </tr>`;
 
                 cartBody.insertAdjacentHTML("beforeend", row);
             });
@@ -182,7 +197,11 @@
             document.getElementById("netAmount").textContent = net.toFixed(2);
 
             const totalCost = parseFloat(localStorage.getItem("totalCost")) || 0;
-            const profit = net - totalCost;
+
+            // ✅ تعديل الكلفة حسب الخصم
+            const adjustedCost = totalCost - (totalCost * (discountPercent / 100));
+
+            const profit = net - adjustedCost;
 
             document.getElementById("profit").textContent = profit.toFixed(2);
         }
@@ -238,6 +257,29 @@
                 console.error(err);
             }
         }
+
+        function clearCart() {
+            if (!confirm("Are you sure you want to clear the cart?")) return;
+
+            localStorage.removeItem("cart");
+            localStorage.removeItem("totalCost");
+
+            // إعادة تحميل الجدول وتصفير القيم
+            loadCart();
+        }
+        function removeItem(id) {
+
+            if (!confirm("Remove this item from cart?")) return;
+
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            cart = cart.filter(i => i.id != id);
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            loadCart();
+        }
+
     </script>
 }
 

@@ -1,11 +1,12 @@
-﻿using MaterialQ.Data;
+﻿using iTextSharp.text;
+using iTextSharp.text.pdf;
+using MaterialQ.Data;
 using MaterialQ.Models.DataModels;
 using MaterialQ.Models.ViewModels;
 using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
+using Microsoft.Identity.Client;
 using System.IO;
 
 namespace MaterialQ.Controllers
@@ -40,20 +41,13 @@ namespace MaterialQ.Controllers
                 query = query.Where(q => q.DateCreated.Date <= toDate.Date);
             }
 
+          
             if (!string.IsNullOrEmpty(search))
             {
                 query = query.Where(q =>
-
-                    q.QuotationNumber.Contains(search));
-                   
-               
-            }
-            if (!string.IsNullOrEmpty(search))
-            {
-                query = query.Where(q =>
-
-                    q.Company.Name.Contains(search));
-
+                    q.QuotationNumber.Contains(search) ||
+                    q.Company.Name.Contains(search)
+                );
             }
             var result = await query
                 .OrderByDescending(q => q.DateCreated)
@@ -74,9 +68,10 @@ namespace MaterialQ.Controllers
                         i.Description.Contains(search) ||
                         i.Code.Contains(search))
                     .ToList();
+
             }
 
-          
+
             var viewModel = new AddQuotationViewModel
             {
                 Items = items.ToList()
@@ -124,6 +119,10 @@ namespace MaterialQ.Controllers
                 var discountAmount = quotation.TotalAmount * (quotation.Discount / 100m);
 
                 quotation.NetAmount = quotation.TotalAmount - discountAmount;
+                var totalCost = quotation.Items.Sum(i =>
+                     (i.ActualPrice * i.Quantity) + i.Vat
+                );
+                var profit = quotation.NetAmount - totalCost;
 
 
                 var newQuotation = new QuotationModel
@@ -135,6 +134,7 @@ namespace MaterialQ.Controllers
                     TotalAmount = quotation.TotalAmount,
                     Discount = quotation.Discount,
                     NetAmount = quotation.NetAmount,
+                    Profit = profit,
                     Status = quotation.Status
                 };
 
@@ -191,9 +191,9 @@ namespace MaterialQ.Controllers
                 FromFax = "02-5864004",
                 FromContact = "Ahmed Al Abdullat",
                 ToCompany = lpo.Company.Name,
-                ToTel = "050-8401185",
-                ToFax = "0",
-                ToAttention = "Mr. SHAHID",
+                ToTel = lpo.Company.Tel,
+                ToFax = lpo.Company.Fax,
+                ToAttention = lpo.Company.Attention,
                 PlaceDeliver = "Abu Dhabi - Mafraq Industrial Area",
                 Contact = "050-9059922"
             };
@@ -333,19 +333,22 @@ namespace MaterialQ.Controllers
                     SpacingBefore = 10
                 };
                 footerTable.DefaultCell.Border = Rectangle.NO_BORDER;
-
-                // -- Totals
-                decimal subTotal = lpo.Items.Sum(i => i.Quantity * i.UnitPrice);
-                decimal vatAmount = subTotal * 0.05m;
-                decimal grandTotal = subTotal + vatAmount;
+                decimal subtotal = lpo.TotalAmount;
+                decimal discountAmount = subtotal * (lpo.Discount / 100m);
+                decimal vat = lpo.Items.Sum(i => i.Vat);
+                decimal grandTotal = lpo.NetAmount;
 
                 var totalsTable = new PdfPTable(2);
                 totalsTable.WidthPercentage = 45;
-                totalsTable.HorizontalAlignment = Element.ALIGN_RIGHT;
-                totalsTable.AddCell(CreateTotalCell("TOTAL", fontEnglishBold, BaseColor.White));
-                totalsTable.AddCell(CreateTotalCell(subTotal.ToString("F2"), fontEnglishNormal, BaseColor.White));
+                totalsTable.AddCell(CreateTotalCell("SUBTOTAL", fontEnglishBold, BaseColor.White));
+                totalsTable.AddCell(CreateTotalCell(subtotal.ToString("F2"), fontEnglishNormal, BaseColor.White));
+
+                totalsTable.AddCell(CreateTotalCell($"DISCOUNT {lpo.Discount}%", fontEnglishBold, BaseColor.White));
+                totalsTable.AddCell(CreateTotalCell("- " + discountAmount.ToString("F2"), fontEnglishNormal, BaseColor.White));
+
                 totalsTable.AddCell(CreateTotalCell("VAT 5%", fontEnglishBold, BaseColor.White));
-                totalsTable.AddCell(CreateTotalCell(vatAmount.ToString("F2"), fontEnglishNormal, BaseColor.White));
+                totalsTable.AddCell(CreateTotalCell(vat.ToString("F2"), fontEnglishNormal, BaseColor.White));
+
                 totalsTable.AddCell(CreateTotalCell("GRAND TOTAL", fontEnglishBold, BaseColor.LightGray));
                 totalsTable.AddCell(CreateTotalCell(grandTotal.ToString("F2"), fontEnglishBold, BaseColor.LightGray));
                 footerTable.AddCell(totalsTable);
@@ -508,7 +511,12 @@ namespace MaterialQ.Controllers
 
             if (quotation == null)
                 return Json(new { success = false, message = "Quotation not found" });
+            var totalCost = model.Items.Sum(i =>
+    (i.ActualPrice * i.Quantity) + i.Vat
+);
 
+            var profit = model.NetAmount - totalCost;
+            quotation.Profit = profit;
             quotation.Discount = model.Discount;
             quotation.TotalAmount = model.TotalAmount;
             quotation.NetAmount = model.NetAmount;
@@ -551,6 +559,8 @@ namespace MaterialQ.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int id, QuotationModel updated)
         {
+            if (id != updated.Id) return BadRequest();
+
             var quotation = await _context.Quotations
                 .Include(q => q.Items)
                 .Include(q => q.Company)
@@ -558,7 +568,13 @@ namespace MaterialQ.Controllers
 
             if (quotation == null)
                 return NotFound();
+           
 
+            var totalCost = updated.Items.Sum(i =>
+                 (i.ActualPrice * i.Quantity) + i.Vat
+             );
+
+            quotation.Profit = updated.NetAmount - totalCost;
             quotation.CompanyId = updated.CompanyId;
             quotation.Discount = updated.Discount;
             quotation.NetAmount = updated.NetAmount;

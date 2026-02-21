@@ -20,12 +20,12 @@
                 <h5 class="card-title">New Item</h5>
 
                 <!-- Form -->
-                <form method="post" enctype="multipart/form-data">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
 
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label">Item Image</label>
                         <div class="col-sm-10">
-                            <input class="form-control" type="file" name="ImageFile">
+                            <input type="file" name="ImageFile" class="form-control" accept="image/*" />
                         </div>
                     </div>
 
@@ -60,9 +60,14 @@
                     <div class="row mb-3">
                         <label class="col-sm-2 col-form-label">VAT</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" name="Vat" step="0.01" required>
+                            <input type="text"
+                                   class="form-control"
+                                   value="5%"
+                                   readonly>
+                            <input type="hidden" name="Vat" value="0.05" />
                         </div>
                     </div>
+
 
                     <!-- ✅ الكمية بدل الألوان -->
                     <div class="row mb-3">

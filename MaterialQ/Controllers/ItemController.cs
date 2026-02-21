@@ -35,26 +35,65 @@ namespace MaterialQ.Controllers
             ViewBag.Units = await _unitService.GetAllAsync();
             return View();
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormCollection form)
+        public async Task<IActionResult> Create(IFormCollection form, IFormFile ImageFile)
         {
+            string imagePath = null;
+
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/items");
+
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Guid.NewGuid() + Path.GetExtension(ImageFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await ImageFile.CopyToAsync(stream);
+                }
+
+                imagePath = "uploads/items/" + fileName; // هذا اللي بنخزّنه بالداتا
+            }
+
             var item = new ItemsModel
             {
                 Code = form["Code"],
                 Description = form["Description"],
                 Price = float.Parse(form["Price"]),
                 ActualPrice = float.Parse(form["ActualPrice"]),
-                Vat = float.Parse(form["Vat"]),
+                Vat =  0.05f,
                 Qty = float.Parse(form["Qty"]),
                 UnitId = int.Parse(form["UnitId"]),
-                Image = (form["Image"])
+                Image = imagePath   // ✅ صار يخزن المسار صح
             };
 
             await _itemService.AddAsync(item);
             return RedirectToAction(nameof(Index));
         }
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create(IFormCollection form)
+        //{
+        //    var item = new ItemsModel
+        //    {
+        //        Code = form["Code"],
+        //        Description = form["Description"],
+        //        Price = float.Parse(form["Price"]),
+        //        ActualPrice = float.Parse(form["ActualPrice"]),
+        //        Vat = float.Parse(form["Vat"]),
+        //        Qty = float.Parse(form["Qty"]),
+        //        UnitId = int.Parse(form["UnitId"]),
+        //        Image = (form["Image"])
+        //    };
+
+        //    await _itemService.AddAsync(item);
+        //    return RedirectToAction(nameof(Index));
+        //}
 
         // --------- Edit ---------
         [HttpGet]
@@ -85,10 +124,9 @@ namespace MaterialQ.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UpdateItemViewModel model)
+        public async Task<IActionResult> Edit(int id, UpdateItemViewModel model, IFormFile ImageFile)
         {
-                ViewBag.Units = await _unitService.GetAllAsync();
-             
+            ViewBag.Units = await _unitService.GetAllAsync();
 
             var item = await _itemService.GetByIdAsync(id);
             if (item == null) return NotFound();
@@ -101,18 +139,58 @@ namespace MaterialQ.Controllers
             item.Qty = model.Qty;
             item.UnitId = model.UnitId;
 
+            if (ImageFile != null && ImageFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads/items");
+
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Guid.NewGuid() + Path.GetExtension(ImageFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await ImageFile.CopyToAsync(stream);
+                }
+
+                item.Image = "uploads/items/" + fileName;
+            }
+
             await _itemService.UpdateAsync(item);
 
             return RedirectToAction(nameof(Index));
         }
-
         // --------- Delete ---------
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteItemConfirmed(int id)
         {
+            var isUsed = await _context.QuotationItems
+                .AnyAsync(q => q.ItemId == id);
+
+            if (isUsed)
+            {
+                TempData["Error"] = "Cannot delete this item because it is used in quotations.";
+                return RedirectToAction(nameof(Index));
+            }
+
             await _itemService.DeleteAsync(id);
+
+            TempData["Success"] = "Item deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        public async Task<IActionResult> _DeleteItemModal(int id)
+        {
+            var item = await _context.Items.FindAsync(id);
+            if (item == null)
+                return NotFound();
+
+            return PartialView("_DeleteItemModal", item);
+        }
+
+
     }
 }

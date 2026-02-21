@@ -33,7 +33,7 @@ public class QuotationModel
 
     [StringLength(50)]
     public string Status { get; set; }
-
+    public decimal Profit { get; set; }
     public List<QuotationItemsModel> Items { get; set; } = new();
 }
 

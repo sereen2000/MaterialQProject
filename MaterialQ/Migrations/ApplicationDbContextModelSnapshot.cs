@@ -30,8 +30,23 @@ namespace MaterialQ.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Attention")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Contact")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fax")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlaceDeliver")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tel")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -190,6 +205,9 @@ namespace MaterialQ.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("NetAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Profit")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("QuotationNumber")
