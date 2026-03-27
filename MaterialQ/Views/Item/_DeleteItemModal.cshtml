@@ -1,28 +1,42 @@
-﻿@model MaterialQ.Models.ViewModels.DeleteItemViewModel
+﻿@model MaterialQ.Models.DataModels.ItemsModel
 
-<div class="modal fade" id="deleteItemModal" tabindex="-1" aria-labelledby="deleteItemModalLabel" aria-hidden="true">
+<div class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
+         
+
             <div class="modal-header">
-                <h5 class="modal-title text-danger" id="deleteItemModalLabel">Delete Item: @Model.Description</h5>
+                <h5 class="modal-title text-danger">
+                    Confirm Delete
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
-                <p>Are you sure you want to delete all variants of this item?</p>
-                <ul>
-                    @foreach (var c in Model.Colors)
-                    {
-                        <li>@c.ColorName (@c.Quantity)</li>
-                    }
-                </ul>
+                <p>
+                    Are you sure you want to delete
+                    <strong>@Model.Code</strong> ?
+                </p>
             </div>
+
             <div class="modal-footer">
                 <form asp-action="DeleteItemConfirmed" method="post">
-                    <input type="hidden" name="code" value="@Model.Code" />
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete All</button>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-danger">
+                        Delete
+
+                    </button>
+                     
                 </form>
             </div>
+
         </div>
     </div>
-</div>
+</div>+++

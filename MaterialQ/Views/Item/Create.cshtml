@@ -20,133 +20,79 @@
                 <h5 class="card-title">New Item</h5>
 
                 <!-- Form -->
-                <form method="post" enctype="multipart/form-data">
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
 
-                    <!-- Item Image -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label"><i class="ri-image-add-fill"></i>  Item Image</label>
+                        <label class="col-sm-2 col-form-label">Item Image</label>
                         <div class="col-sm-10">
-                            <input class="form-control" type="file" id="formFile" name="ImageFile">
+                            <input type="file" name="ImageFile" class="form-control" accept="image/*" />
                         </div>
                     </div>
 
-                    <!-- Item Code -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label"><i class="ri-barcode-line"></i>  Item Code</label>
+                        <label class="col-sm-2 col-form-label">Item Name</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" name="ItemCode" required>
+                            <input type="text" class="form-control" name="Code" required>
                         </div>
                     </div>
 
-                    <!-- Item Description -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label"><i class="bi bi-text-paragraph"></i>  Item Description</label>
+                        <label class="col-sm-2 col-form-label">Description</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="Description" required>
                         </div>
                     </div>
 
-                    <!-- Price -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label"><i class="ri-money-dollar-circle-line"></i>  Price</label>
+                        <label class="col-sm-2 col-form-label">Price</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" name="Price" placeholder="Enter price" min="0" step="0.01" required>
+                            <input type="number" class="form-control" name="Price" step="0.01" required>
                         </div>
                     </div>
 
-                    <!-- VAT -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label"><i class="bx bx-money"></i>  VAT</label>
+                        <label class="col-sm-2 col-form-label">Actual Price</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" name="VAT" placeholder="Enter VAT" min="0" step="0.01" required>
+                            <input type="number" class="form-control" name="ActualPrice" step="0.01" required>
                         </div>
                     </div>
 
-                    <!-- Colors & Quantities -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label"><i class="ri-stock-line"></i> Colors & Quantities</label>
+                        <label class="col-sm-2 col-form-label">VAT</label>
                         <div class="col-sm-10">
-                            <table class="table table-bordered" id="colorTable">
-                                <thead>
-                                    <tr>
-                                        <th>Color</th>
-                                        <th>Quantity</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#colorModal">
-                                <i class="ri-add-circle-fill"></i> Add Color
-                            </button>
+                            <input type="text"
+                                   class="form-control"
+                                   value="5%"
+                                   readonly>
+                            <input type="hidden" name="Vat" value="0.05" />
                         </div>
                     </div>
 
-                    <!-- Unit -->
+
+                    <!-- ✅ الكمية بدل الألوان -->
                     <div class="row mb-3">
-                        <label class="col-sm-2 col-form-label"><i class="bx bx-wrench"></i>  Unit</label>
+                        <label class="col-sm-2 col-form-label">Quantity</label>
                         <div class="col-sm-10">
-                            <select id="unitSelect" class="form-select" name="Unit" required>
-                                <option selected disabled>Select item unit</option>
+                            <input type="number" class="form-control" name="Qty" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-2 col-form-label">Unit</label>
+                        <div class="col-sm-10">
+                            <select class="form-select" name="UnitId" required>
+                                <option selected disabled>Select unit</option>
                                 @foreach (var unit in ViewBag.Units)
                                 {
                                     <option value="@unit.Id">@unit.Name</option>
                                 }
-                                <option value="addUnit">➕ Add New</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Color Modal -->
-                    <div class="modal fade" id="colorModal" tabindex="-1" aria-labelledby="colorModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="colorModalLabel"> Add Color & Quantity</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label class="form-label">Color</label>
-                                        <select id="colorSelect" class="form-select">
-                                            <option selected disabled>Select Color</option>
-                                            @foreach (var color in ViewBag.Colors)
-                                            {
-                                                <option value="@color.Id">@color.Name</option>
-                                            }
-                                            <option value="addNew">➕ Add New Color</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Input for new color -->
-                                    <div class="mb-3" id="newColorDiv" style="display:none;">
-                                        <label class="form-label">New Color Name</label>
-                                        <input type="text" id="newColorInput" class="form-control" placeholder="Enter new color">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Quantity</label>
-                                        <input type="number" id="newColorQty" class="form-control" placeholder="Enter quantity" min="1">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="button" id="saveColorBtn" class="btn btn-primary"><i class="ri-add-circle-fill"></i>Add</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Submit -->
-                    <div class="row mb-3">
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-primary">Submit Form</button>
-                        </div>
-                    </div>
-
-                    <input type="hidden" name="ColorsJson" id="ColorsJson">
-
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
+
             </div>
         </div>
     </div>
@@ -227,13 +173,45 @@
             colorsJsonInput.value = JSON.stringify(colorsList);
         });
 
-        // Unit "Add New" alert
-        const unitSelect = document.getElementById("unitSelect");
+        // ==== UNIT MODAL FUNCTIONALITY ====
+        const unitModal = new bootstrap.Modal(document.getElementById("unitModal"));
+        const newUnitInput = document.getElementById("newUnitInput");
+        const saveUnitBtn = document.getElementById("saveUnitBtn");
+        const newUnitHidden = document.getElementById("NewUnitName");
+
+        // When "Add New" is selected — open the modal
         unitSelect.addEventListener("change", function () {
             if (this.value === "addUnit") {
-                alert("You can add your 'Add Unit' modal here.");
-                this.selectedIndex = 0;
+                newUnitInput.value = "";
+                unitModal.show();
+                this.selectedIndex = 0; // reset to "Select item unit"
             }
+        });
+
+        // Save new unit and add it to the dropdown
+        saveUnitBtn.addEventListener("click", function () {
+            const unitName = newUnitInput.value.trim();
+            if (!unitName) {
+                alert("Please enter a unit name");
+                return;
+            }
+
+            // Create new <option> with ID = 0
+            const newOption = document.createElement("option");
+            newOption.value = 0; // backend سيضيفه بعدين
+            newOption.textContent = unitName;
+
+            // Insert before "Add Unit"
+            const addUnitOption = unitSelect.querySelector("option[value='addUnit']");
+            unitSelect.insertBefore(newOption, addUnitOption);
+
+            // Select the new unit
+            unitSelect.value = 0;
+
+            // Put name in hidden input for backend
+            newUnitHidden.value = unitName;
+
+            unitModal.hide();
         });
     </script>
 }

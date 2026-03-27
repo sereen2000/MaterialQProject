@@ -4,10 +4,17 @@ namespace MaterialQ.Models.ViewModels;
 
 public class DashboardViewModel
 {
-    public List<ItemsModel> LowStockItems { get; set; } = new List<ItemsModel>();
+    public List<LowStockItemViewModel> LowStockItems { get; set; } = new List<LowStockItemViewModel>();
 
     // You can add other dashboard metrics here if needed
-    public int TodaySales { get; set; }
-    public int ThisMonthRevenue { get; set; }
+    public decimal TodaySales { get; set; }
+    public decimal ThisMonthRevenue { get; set; }
     public int ThisYearCustomers { get; set; }
+}
+
+public class LowStockItemViewModel
+{
+    public string Code { get; set; }
+    public string ColorName { get; set; }
+    public Double Qty { get; set; }
 }

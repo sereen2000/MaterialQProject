@@ -9,13 +9,13 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>Dashboard - Art Of Quote</title>
+    <title> Art Of Quote</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
     <!-- Favicons -->
-    <link href="~/img/Logo_page.png" rel="icon">
-    <link href="~/img/apple-touch-icon.png" rel="apple-touch-icon">
+    <link href="~/img/Logo_page.png" rel="icon"> 
+    @*<link href="~/img/apple-touch-icon.png" rel="apple-touch-icon"> *@
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -40,7 +40,7 @@
 
         <div class="d-flex align-items-center justify-content-between">
             <a asp-controller="Main" asp-action="index" class="logo d-flex align-items-center">
-                <img src="~/img/LOGO_page.png" alt="">
+                <img src="~/img/LOGO_page.png" alt=""> 
                 <span class="d-none d-lg-block">Art Of Quote</span>
             </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
@@ -101,14 +101,15 @@
 
                             <li><hr class="dropdown-divider"></li>
 
-                            <li>
-                                <form id="logoutForm" asp-area="Identity" asp-page="/Account/Login" method="post" class="dropdown-item d-flex align-items-center">
+                          @*   <li>
+
+                                <form id="logoutForm" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Identity/Account/Login" method="post" class="dropdown-item d-flex align-items-center">
                                     <button type="submit" class="border-0 bg-transparent p-0 d-flex align-items-center text-start">
                                         <i class="bi bi-box-arrow-right"></i>
                                         <span class="ms-2">Sign Out</span>
                                     </button>
                                 </form>
-                            </li>
+                            </li> *@
                         </ul>
                     }
                     else
@@ -128,12 +129,7 @@
 
         <ul class="sidebar-nav" id="sidebar-nav">
             <li class="nav-heading">Pages</li>
-            <li class="nav-item">
-                <a class="nav-link collapsed" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">
-                    <i class="bi bi-question-circle"></i>
-                    <span>Profile</span>
-                </a>
-            </li>
+           
             <li class="nav-item">
                 <a class="nav-link collapsed" asp-controller="Quotations" asp-action="Index">
                     <i class="bi bi-receipt"></i>
@@ -169,25 +165,35 @@
                         </a>
                     </li>
                     <li>
+                        <a asp-controller="Companies" asp-action="Index">
+                            <i class="bx bx-add-to-queue"></i><span>Companies</span>
+                        </a>
+                    </li>
+                   @*  <li>
                         <a asp-controller="Color" asp-action="Index">
                             <i class="bx bxs-color-fill"></i><span>Colors</span>
                         </a>
-                    </li>
+                    </li> *@
                 </ul>
             </li>
 
-
+            <li class="nav-item">
+                <a class="nav-link collapsed" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">
+                    <i class="bi bi-question-circle"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
             @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
             {
 
-
+@* 
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="pages-contact.html">
                         <i class="bi bi-envelope"></i>
                         <span>Contact</span>
                     </a>
                 </li>
-            
+             *@
 
                 <li class="nav-item">
                     <a class="nav-link collapsed" asp-controller="Main" asp-action="dashboard">
@@ -227,7 +233,8 @@
             else
             {
                 <li class="nav-item">
-                    <form method="post" asp-area="Identity" asp-page="/Account/Login">
+
+                    <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Identity/Account/Login">
                         <button type="submit" class="nav-link collapsed btn w-100 text-start">
                             <i class="bi bi-box-arrow-right"></i>
                             <span>Logout</span>

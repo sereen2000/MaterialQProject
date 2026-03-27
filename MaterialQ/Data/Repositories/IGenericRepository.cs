@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace MaterialQ.Data.Repositories.Implementations;
+namespace MaterialQ.Data.Repositories;
 
 public interface IGenericRepository<T> where T : class
 {

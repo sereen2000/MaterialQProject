@@ -8,40 +8,47 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="bi bi-plus-circle me-2"></i> Select Items</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          
 
-        <a asp-controller="Quotations" asp-action="ReviewQuotation" class="btn btn-outline-secondary position-relative">
+            <div>
+                <button type="button" class="btn btn-warning me-2" onclick="addAllToCart()">
+                    <i class="bi bi-cart-plus"></i> Add All to Cart
+                </button>
+
+                <a asp-controller="Quotations" asp-action="ReviewQuotation"
+                   class="btn btn-outline-secondary position-relative">
+
+                    <i class="bi bi-cart"></i> Cart
+                    <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
+                </a>
+            </div>
+        </div>
+
+    @*     <a asp-controller="Quotations" asp-action="ReviewQuotation" class="btn btn-outline-secondary position-relative">
             <i class="bi bi-cart3"></i> Cart
             <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 0
             </span>
-        </a>
+        </a> *@
     </div>
 
-    <!-- فلاتر -->
-    <form method="get" class="row g-3 mb-4">
-        <div class="col-md-4">
-            <input type="text" class="form-control" name="search" placeholder="Search items..." />
-        </div>
-        <div class="col-md-3">
-            <select class="form-select" name="category">
-                <option value="">All Categories</option>
-                <option>Electronics</option>
-                <option>Furniture</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <select class="form-select" name="brand">
-                <option value="">All Brands</option>
-                <option>Brand A</option>
-                <option>Brand B</option>
-            </select>
-        </div>
-        <div class="col-md-2 d-grid">
-            <button class="btn btn-outline-primary" type="submit">
-                <i class="bi bi-search"></i> Filter
-            </button>
-        </div>
-    </form>
+   <form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" class="form-control" name="search" 
+               placeholder="Search items..."
+               value="@ViewBag.Search" />
+    </div>
+
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-outline-primary" type="submit">
+            <i class="bi bi-search"></i> Search
+        </button>
+    </div>
+</form>
+
 
     <!-- جدول العناصر -->
     <div class="card shadow-sm">
@@ -49,12 +56,13 @@
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>Code</th>
                         <th>Name</th>
+                        <th>Description</th>
                         <th>Unit</th>
+                        <th>Actual Price</th>
                         <th>Unit Price</th>
-                        <th>Vat</th>
-                        <th style="width: 60px;"></th>
+                        <th>VAT</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -66,10 +74,14 @@
                                 <td>@item.Code</td>
                                 <td>@item.Description</td>
                                 <td>@item.Unit?.Name</td>
+                                <td>@item.ActualPrice.ToString("F2")</td>
                                 <td>@item.Price.ToString("F2")</td>
-                                <td>@item.Vat</td>
+                                <td>5%</td>
+
                                 <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-success" onclick="addToCart('@item.Id')">
+                                    <button type="button"
+                                            class="btn btn-sm btn-success"
+                                            onclick="addToCart('@item.Id', this)">
                                         <i class="bi bi-plus-circle"></i>
                                     </button>
                                 </td>
@@ -79,60 +91,113 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="7" class="text-center text-muted py-4">
                                 No items found.
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+
         </div>
     </div>
 </div>
 @section Scripts {
     <script>
-              function addToCart(id) {
-            // نجيب السلة الحالية من localStorage أو نعمل واحدة جديدة
+
+        function addAllToCart() {
+
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-           
-            const row = event.target.closest("tr");
+            // خذ كل الصفوف من الجدول الحالي (بدون #itemsTable)
+            document.querySelectorAll("table tbody tr").forEach(row => {
+
+                // إذا الصف عبارة عن "No items found" نتجاهله
+                if (row.querySelector("td[colspan]")) return;
+
+                const id = row.querySelector("button")?.getAttribute("onclick")
+                    ?.match(/'([^']+)'/)?.[1];
+
+                if (!id) return;
+
+                const code = row.children[0].innerText.trim();
+                const description = row.children[1].innerText.trim();
+                const unit = row.children[2].innerText.trim();
+                const actualPrice = parseFloat(row.children[3].innerText.trim()) || 0;
+                const price = parseFloat(row.children[4].innerText.trim()) || 0;
+                const vat = parseFloat(row.children[5].innerText.trim()) || 0;
+
+                const existing = cart.find(i => i.id === id);
+
+                if (!existing) {
+                    cart.push({
+                        id: id,
+                        code: code,
+                        itemDescription: description,
+                        unit: unit,
+                        price: price,
+                        actualPrice: actualPrice,
+                        vat: vat,
+                        qty: 1
+                    });
+                }
+            });
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            // تحديث العدد فوق الأيقونة (مجموع الكميات)
+            document.getElementById("cartCount").innerText =
+                cart.reduce((sum, x) => sum + x.qty, 0);
+
+            alert("All products added to cart ✅");
+        }
+
+        function addToCart(id, btn) {
+
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            const row = btn.closest("tr");
+
             const code = row.children[0].innerText.trim();
             const description = row.children[1].innerText.trim();
-
             const unit = row.children[2].innerText.trim();
-            const price = parseFloat(row.children[3].innerText.trim()) || 0; 
-            const vat = parseFloat(row.children[4].innerText.trim()) || 0;   
+            const actualPrice = parseFloat(row.children[3].innerText.trim()) || 0;
+            const price = parseFloat(row.children[4].innerText.trim()) || 0;
+            const vat = parseFloat(row.children[5].innerText.trim()) || 0;
 
-           
-            const existing = cart.find(i => i.id === id);
+            const existing = cart.find(x => x.id === id);
+
             if (existing) {
-                existing.qty += 1;
+                existing.qty++;
             } else {
-            cart.push({
-            id: id,
-            code: code,
-            itemDescription: description, 
-            unit: unit,
-            price: price,
-            vat: vat,
-            qty: 1
-        });
-
+                cart.push({
+                    id: id,
+                    code: code,
+                    itemDescription: description,
+                    unit: unit,
+                    price: price,
+                    actualPrice: actualPrice,
+                    vat: vat,
+                    qty: 1
+                });
             }
 
             localStorage.setItem("cart", JSON.stringify(cart));
 
-            document.getElementById("cartCount").innerText = cart.length;
-
-            console.log("🛒 Cart Updated:", cart);
-            alert("✅ Added to cart successfully!");
+            document.getElementById("cartCount").innerText =
+                cart.reduce((sum, x) => sum + x.qty, 0);
         }
 
         document.addEventListener("DOMContentLoaded", () => {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
-            document.getElementById("cartCount").innerText = cart.length;
+            document.getElementById("cartCount").innerText =
+                cart.reduce((sum, x) => sum + x.qty, 0);
         });
+
     </script>
 }
+
+
+
+
 

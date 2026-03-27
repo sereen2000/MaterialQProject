@@ -13,7 +13,7 @@
                 <h5 class="card-title mb-0">Manage Roles</h5>
             </div>
 
-            <!-- ✅ Add Role Form -->
+            
             <form method="post" asp-page-handler="Create" class="row g-2 mb-3">
                 @Html.AntiForgeryToken()
                 <div class="col-md-8">
@@ -26,7 +26,7 @@
                 </div>
             </form>
 
-            <!-- ✅ Success/Error Messages -->
+           
             @if (TempData["Success"] != null)
             {
                 <div class="alert alert-success text-center">@TempData["Success"]</div>
@@ -36,7 +36,7 @@
                 <div class="alert alert-danger text-center">@TempData["Error"]</div>
             }
 
-            <!-- ✅ Roles Table -->
+            
             <table class="table table-striped align-middle">
                 <thead class="table-light">
                     <tr>

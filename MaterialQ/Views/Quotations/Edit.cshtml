@@ -19,22 +19,22 @@
         <div class="card-body">
             <h5 class="mb-3">Quotation Information</h5>
 
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label fw-bold">Customer Name</label>
-                <div class="col-sm-9">
-                    <input type="text" id="customerName" class="form-control"
-                           value="@Model.CustomerName" required />
-                </div>
+            <div class="mb-3">
+                <label class="fw-bold">Company:</label>
+                <select asp-for="CompanyId"
+                        class="form-select"
+                        asp-items="@(new SelectList(ViewBag.Companies, "Id", "Name", Model.CompanyId))">
+                    <option value="">-- Select Company --</option>
+                </select>
             </div>
 
-            <div class="row mb-3">
+            <div class=" mb-3">
                 <label class="col-sm-3 col-form-label fw-bold">Discount (%)</label>
                 <div class="col-sm-9">
                     <input type="number" id="discount" class="form-control"
                            value="@Model.Discount" min="0" max="100" />
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -63,32 +63,34 @@
 
                                 <td>@item.ItemId</td>
 
-                                <!-- Description: READ ONLY -->
                                 <td>
                                     <input type="text" class="form-control desc"
                                            value="@item.ItemDescription" readonly />
                                 </td>
 
-                                <!-- Quantity: EDITABLE -->
                                 <td>
                                     <input type="number" class="form-control qty"
                                            value="@item.Quantity" min="1" />
                                 </td>
 
-                                <!-- Unit Price: READ ONLY -->
                                 <td>
                                     <input type="number" class="form-control price"
                                            value="@item.UnitPrice" step="0.01" readonly />
                                 </td>
 
-                                <!-- VAT: READ ONLY -->
                                 <td>
-                                    <input type="number" class="form-control vat"
-                                           value="@item.Vat" step="0.01" readonly />
+                                    <input type="text"
+                                           class="form-control"
+                                           value="5%"
+                                           readonly>
+
+                                    <input type="hidden"
+                                           class="vat"
+                                           value="0.05" />
                                 </td>
 
-                                <td class="total-cell fw-bold"></td>
 
+                                <td class="total-cell fw-bold"></td>
                             </tr>
                         }
                     </tbody>
@@ -101,12 +103,11 @@
 
             <div class="d-flex justify-content-end mt-3">
                 <div class="text-end">
-                    <h6>Subtotal: <span id="subtotal" class="fw-bold text-primary"></span> JOD</h6>
-                    <h6>Discount: <span id="discountVal" class="fw-bold"></span> JOD</h6>
-                    <h5 class="text-success">Net Amount: <span id="netAmount" class="fw-bold"></span> JOD</h5>
+                    <h6>Total Amount: <span id="subtotal" class="fw-bold text-primary"></span> AED </h6>
+                    <h6>Discount Amount : <span id="discountVal" class="fw-bold"></span> AED </h6>
+                    <h5 class="text-success">Net Amount: <span id="netAmount" class="fw-bold"></span> AED </h5>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -128,10 +129,11 @@
                 const qty = parseFloat(row.querySelector(".qty").value) || 0;
                 const price = parseFloat(row.querySelector(".price").value) || 0;
                 const vat = parseFloat(row.querySelector(".vat").value) || 0;
+                const base = qty * price;          // السعر الأساسي للسطر
+                 const vatAmount = base * 0.05;     // ✅ 5% من التوتال للسطر
+                 const total = base + vatAmount;
 
-                const total = (qty * price) + vat;
-                row.querySelector(".total-cell").innerText = total.toFixed(2);
-
+                     row.querySelector(".total-cell").innerText = total.toFixed(2);
                 subtotal += total;
             });
 
@@ -147,26 +149,31 @@
         document.addEventListener("input", recalcTotals);
         document.addEventListener("DOMContentLoaded", recalcTotals);
 
-             async function saveChanges(id) {
+        async function saveChanges(id) {
 
             let items = [];
 
             document.querySelectorAll("#itemsTable tbody tr").forEach(row => {
+                  const qty = parseFloat(row.querySelector(".qty").value) || 0;
+        const price = parseFloat(row.querySelector(".price").value) || 0;
+
+        const base = qty * price;
+        const vatAmount = base * 0.05;   // ✅ 5% من التوتال للسطر
                 items.push({
-                    ItemId: row.dataset.id,
+                    ItemId: parseInt(row.dataset.id),
                     ItemDescription: row.querySelector(".desc").value,
                     Quantity: parseInt(row.querySelector(".qty").value),
                     UnitPrice: parseFloat(row.querySelector(".price").value),
-                    Vat: parseFloat(row.querySelector(".vat").value)
+                    Vat: vatAmount
                 });
             });
 
             const quotation = {
                 Id: id,
-                CustomerName: document.getElementById("customerName").value,
-                Discount: parseFloat(document.getElementById("discount").value),
-                TotalAmount: parseFloat(document.getElementById("subtotal").innerText),
-                NetAmount: parseFloat(document.getElementById("netAmount").innerText),
+                CompanyId: document.querySelector("#CompanyId").value,
+                Discount: parseFloat(document.getElementById("discount").value) || 0,
+                TotalAmount: parseFloat(document.getElementById("subtotal").innerText) || 0,
+                NetAmount: parseFloat(document.getElementById("netAmount").innerText) || 0,
                 Items: items
             };
 
@@ -183,6 +190,5 @@
             else
                 alert(data.message ?? "Error while saving");
         }
-
     </script>
 }

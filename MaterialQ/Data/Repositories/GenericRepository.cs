@@ -1,9 +1,7 @@
-﻿using MaterialQ.Data;
-using MaterialQ.Data.Repositories.Implementations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace MaterialQ.Data.Repositories.Interfaces;
+namespace MaterialQ.Data.Repositories;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {

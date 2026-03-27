@@ -1,6 +1,5 @@
 using MaterialQ.Data;
-using MaterialQ.Data.Repositories.Implementations;
-using MaterialQ.Data.Repositories.Interfaces;
+using MaterialQ.Data.Repositories;
 using MaterialQ.Services.Implementations;
 using MaterialQ.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +21,6 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IItemService, ItemService>();
-builder.Services.AddScoped<IColorService, ColorService>();
 builder.Services.AddScoped<IUnitService, UnitService>();
 builder.Services.AddHostedService<CheckStockService>();
 
@@ -48,7 +46,14 @@ app.UseRouting();
 
 app.UseAuthentication(); 
 app.UseAuthorization();
-
+app.MapControllers();
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+    context.Response.Headers["Pragma"] = "no-cache";
+    context.Response.Headers["Expires"] = "0";
+    await next();
+});
 
 
 app.MapControllerRoute(

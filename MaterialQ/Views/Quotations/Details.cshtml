@@ -20,9 +20,8 @@
             <dl class="row">
                 <dt class="col-sm-3">Quotation Number</dt>
                 <dd class="col-sm-9">@Model.QuotationNumber</dd>
-
-                <dt class="col-sm-3">Customer Name</dt>
-                <dd class="col-sm-9">@Model.CustomerName</dd>
+                <dt class="col-sm-3">Company Name </dt>
+                <dd class="col-sm-9">@Model.Company.Name</dd>
 
                 <dt class="col-sm-3">Date Created</dt>
                 <dd class="col-sm-9">@Model.DateCreated.ToString("yyyy-MM-dd HH:mm")</dd>
@@ -60,7 +59,7 @@
                                 <td>@item.ItemDescription</td>
                                 <td>@item.Quantity</td>
                                 <td>@item.UnitPrice.ToString("F2")</td>
-                                <td>@(item.Quantity * item.UnitPrice).ToString("F2")</td>
+                                <td>@((item.Quantity * item.UnitPrice) + @item.Vat)  </td>
                             </tr>
                         }
                     </tbody>
@@ -73,9 +72,9 @@
 
             <div class="d-flex justify-content-end mt-3">
                 <div class="text-end">
-                    <h6>Total Amount: <span class="fw-bold">@Model.TotalAmount.ToString("F2") JOD</span></h6>
-                    <h6>Discount: <span class="fw-bold">@Model.Discount.ToString("F2") JOD</span></h6>
-                    <h5 class="text-success">Net Amount: <span class="fw-bold">@Model.NetAmount.ToString("F2") JOD</span></h5>
+                    <h6>Total Amount: <span class="fw-bold">@Model.TotalAmount.ToString("F2") AED</span></h6>
+                    <h6>Discount: <span class="fw-bold">@Model.Discount.ToString("F2") %</span></h6>
+                    <h5 class="text-success">Net Amount: <span class="fw-bold">@Model.NetAmount.ToString("F2") AED </span></h5>
                 </div>
             </div>
         </div>
